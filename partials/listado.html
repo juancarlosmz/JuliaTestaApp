@@ -1,0 +1,53 @@
+<form ng-submit="registrar()">
+    
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Nombre" ng-model="Nombre" ng-required="true">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Apellido" ng-model="Apellido" ng-required="true">
+    </div>
+    <div class="form-group">
+        <input type="email" class="form-control" placeholder="Correo" ng-model="email" ng-required="true">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Password" ng-model="contra" ng-required="true">
+    </div>
+    <div class="form-group">
+        <select ng-model="sexo" class="form-control">
+            <option value="1">Hombre</option>
+            <option value="2">Mujer</option>
+        </select>
+    </div>
+
+
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="FechaNacimiento" ng-model="fnacimiento" ng-required="true">
+    </div>
+    <button style="width: 35% !important; float: left;" type="submit" class="btn btn-default btn-block">Agregar</button>
+    <a style="width: 35% !important; float: right;" href="#/" class="btn btn-default btn-block"> Atras</a>
+</form>
+
+<hr/>
+
+<div class="panel panel-heading">
+    <div class="panel-body">
+      Listado de empleados
+    </div>
+    
+    <table class="table table-bordered">
+        <tr ng-repeat="m in model">
+            <td>{{m.Nombre}}</td>
+            <td ng-if="m.sexo == 1">Hombre</td>
+            <td ng-if="m.sexo == 2">Mujer</td>
+            <td>
+                <a class="btn btn-default btn-xs" href="#/ver/{{m.id}}">
+                    <i class="glyphicon glyphicon-eye-open"></i>
+                </a>
+                <button class="btn btn-danger btn-xs" ng-click="retirar(m.id)">
+                    <i class="glyphicon glyphicon-trash"></i>
+                </button>
+            </td>
+        </tr>
+    </table>
+  </div>
+
