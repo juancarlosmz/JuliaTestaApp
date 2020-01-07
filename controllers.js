@@ -127,7 +127,7 @@ empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location',
        
 }]);
 
-empleadoControllers.controller('AllProducts', ['$scope','$http','$location', function($scope,$http,$location) {
+empleadoControllers.controller('AllProducts', ['$scope','$http','$location','$routeParams', function($scope,$http,$location,$routeParams) {
 
 
     $scope.validation_user = false;
@@ -147,11 +147,75 @@ empleadoControllers.controller('AllProducts', ['$scope','$http','$location', fun
         $scope.validation_user = false;
     }
 
+    $http.post(rute+"php/Collections.php").then(function successCallback(response) {
+        $scope.dataColl = response.data;
+        $scope.collectionsall = $scope.dataColl.collection_listings
+        console.log($scope.dataColl.collection_listings);
+    }, function errorCallback(response) {
+        console.log("error 505");  
+    });
+
     
-    $http.post(rute+"shopify/private/apiallproducts.php").then(function successCallback(response) {
+    
+           
+}]);
+
+empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http','$location','$routeParams', function($scope,$http,$location,$routeParams) {
+
+
+    $scope.validation_user = false;
+
+    $scope.saveduser = localStorage.getItem('todosuser');
+    $scope.SesionUser = JSON.parse($scope.saveduser);
+    //console.log("nuevo nuevo",JSON.stringify($scope.SesionUser));
+
+    for(var i in $scope.SesionUser){
+        $scope.Email = $scope.SesionUser[i]['email'];
+        $scope.Rol = $scope.SesionUser[i]['rol'];
+    }
+    if($scope.Rol == '1'){
+        $scope.validation_user = true;
+        //location.reload();
+    }else{
+        $scope.validation_user = false;
+    }
+
+    $http.post(rute+"php/Collections.php").then(function successCallback(response) {
+        $scope.dataColl = response.data;
+        $scope.collectionsall = $scope.dataColl.collection_listings
+
+        for(var i in $scope.collectionsall){
+            if($scope.collectionsall[i]['collection_id'] == $routeParams.collection_id){
+                $scope.collectionName = $scope.collectionsall[i]['title'];
+            }
+        }
+    }, function errorCallback(response) {
+        console.log("error 505");  
+    });
+
+    
+
+    $http.post(rute+"php/SeeCollections.php?collection_id="+$routeParams.collection_id).then(function successCallback(response) {
+        $scope.dataCollProd = response.data;
+        $scope.collectionsProductsall = $scope.dataCollProd.products;
+        console.log($scope.collectionsProductsall);
+    }, function errorCallback(response) {
+        console.log("error 505");  
+    });
+    
+    $http.post(rute+"php/Products.php").then(function successCallback(response) {
         $scope.dataProd = response.data;
-        $scope.productsall = $scope.dataProd.products
-        console.log($scope.dataProd.products);
+        $scope.productsall = $scope.dataProd.products;
+        console.log($scope.productsall);
+        /*
+        for(var i in $scope.productsall){
+            for(var j in $scope.collectionsProductsall){
+                if($scope.productsall[i]['id']!=$scope.collectionsProductsall[j]['id']){
+                    console.log($scope.productsall[i]['title']);
+                }
+            }
+        }
+        */
     }, function errorCallback(response) {
         console.log("error 505");  
     });

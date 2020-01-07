@@ -21,14 +21,39 @@
 </div>
 
 
-  <div class="container"  ng-if="validation_user">
-    <br><br><br><br>
-    <h2>All Products</h2>
-    <div class="row">
-      <div class="item col-md-4" ng-repeat="prod in productsall">
-          <p class="title">by {{ prod.title }}</p>
+<div class="container"  ng-if="validation_user">
+  <br><br><br><br>
+
+
+
+  <!-- Collections -->
+  <div class="row">
+    <!-- Start -->
+    <div class="col-xl-3 col-md-6 mb-4" ng-repeat="coll in collectionsall">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">{{ coll.title }}</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{coll.body_html}}</div>
+            </div>
+            <div class="col-auto">
+              <a href="/JuliaTestaApp/seecollection/{{coll.collection_id}}" class="btn btn-info">
+                <i class="zmdi zmdi-collection-item"></i>
+              </a>
+
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <a style="width: 35% !important; float: right;" style="width: 20% !important;" href="#/" class="btn btn-default btn-block"> Atras</a>
+    <!------------>
+  </div>
+  <!------------>
+
+
+
+
+
   </div>
 

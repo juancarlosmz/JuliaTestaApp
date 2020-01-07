@@ -23,6 +23,11 @@ app.config(['$routeProvider', '$locationProvider',
         controller: 'AllProducts',
         method: 'GET',
       }).
+      when('/seecollection/:collection_id', {
+        templateUrl: 'partials/SeeCollections.html',
+        controller: 'ControllerCollectionProduct',
+        method: 'GET',
+      }).
       otherwise({
         redirectTo: '/',
         method: 'GET',
@@ -30,5 +35,5 @@ app.config(['$routeProvider', '$locationProvider',
       
   }]);
 
-
+  
 
