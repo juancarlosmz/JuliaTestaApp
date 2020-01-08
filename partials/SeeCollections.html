@@ -9,7 +9,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto my-2 my-lg-0">
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/products">Home</a>
+              <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/collections">Home</a>
             </li>
             <li class="nav-item">
               <a style="cursor: pointer;" class="nav-link js-scroll-trigger" ng-click="CloseSession()" >Log out</a>
@@ -24,7 +24,8 @@
   <div class="container"  ng-if="validation_user">
     <br><br><br><br>
     
-
+    <a href="/JuliaTestaApp/collections"> Home </a>  -> {{collectionName}}
+    <hr>
     <!-- Collection Products -->
     <h2>{{collectionName}}</h2>
     <div class="row">
@@ -33,15 +34,19 @@
       </div>
     </div>
     <!------------>
-
-
+    <br>
+    <hr>
     <!-- Products -->
     <h2>All Products</h2>
     <div class="row">
-      <div class="item col-md-4" ng-repeat="prod in productsall">
+      <div class="item col-md-4" ng-repeat="prod in filtroProducts track by $index">
         <p class="title">{{ prod.title }}</p>
       </div>
     </div>
+    <!--PAgination-->
+
+    <ul pagination  total-items="countproductsall" max-size="maxSize"   items-per-page="numPerPageProducts" page="currentPageProducts"></ul>
+
     <!------------>
   
     <a style="width: 35% !important; float: right;" style="width: 20% !important;" href="#/" class="btn btn-default btn-block"> Atras</a>

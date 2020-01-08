@@ -9,7 +9,7 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto my-2 my-lg-0">
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/products">Home</a>
+            <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/collections">Home</a>
           </li>
           <li class="nav-item">
             <a style="cursor: pointer;" class="nav-link js-scroll-trigger" ng-click="CloseSession()" >Log out</a>
@@ -29,7 +29,7 @@
   <!-- Collections -->
   <div class="row">
     <!-- Start -->
-    <div class="col-xl-3 col-md-6 mb-4" ng-repeat="coll in collectionsall">
+    <div class="col-xl-3 col-md-6 mb-4  " ng-repeat="coll in collectionsall">
       <div class="card border-left-info shadow h-100 py-2">
         <div class="card-body">
           <div class="row no-gutters align-items-center">
@@ -38,7 +38,7 @@
               <div class="h5 mb-0 font-weight-bold text-gray-800">{{coll.body_html}}</div>
             </div>
             <div class="col-auto">
-              <a href="/JuliaTestaApp/seecollection/{{coll.collection_id}}" class="btn btn-info">
+              <a href="/JuliaTestaApp/products/{{coll.collection_id}}" class="btn btn-info">
                 <i class="zmdi zmdi-collection-item"></i>
               </a>
 

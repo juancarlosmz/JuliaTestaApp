@@ -8,7 +8,7 @@ class shopify {
     private $PASSWORD = '94fbd59c83fdeb04b5eae14d0a644b95';
 
     function getViewProducts() {   
-        $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/products.json?limit=250&page=2';
+        $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/products.json?limit=250&page=1';
         misPermisos($url);
     }
     function getViewCollection($collect_id) {   
@@ -16,7 +16,7 @@ class shopify {
         misPermisos($url);
     }
     function getViewIdCollections() {   
-        $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/collection_listings.json';
+        $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/collection_listings.json?limit=250&page=1';
         misPermisos($url);
     }
 }

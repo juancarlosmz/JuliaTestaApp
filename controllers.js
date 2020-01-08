@@ -1,4 +1,5 @@
 var empleadoControllers = angular.module('empleadoControllers', []);
+
 var rute = 'http://localhost:50/JuliaTestaApp/';
 
 
@@ -62,9 +63,10 @@ empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location',
                             console.log('ya paso');
                             $timeout(function(){
                                 $scope.dataLoading = false;
-                                $location.path('/products');
+                                $location.path('/collections');
                                 
                             }, 50);
+                               
                         }
 
                     }, function errorCallback(response) {
@@ -183,7 +185,6 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
     $http.post(rute+"php/Collections.php").then(function successCallback(response) {
         $scope.dataColl = response.data;
         $scope.collectionsall = $scope.dataColl.collection_listings
-
         for(var i in $scope.collectionsall){
             if($scope.collectionsall[i]['collection_id'] == $routeParams.collection_id){
                 $scope.collectionName = $scope.collectionsall[i]['title'];
@@ -198,7 +199,6 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
     $http.post(rute+"php/SeeCollections.php?collection_id="+$routeParams.collection_id).then(function successCallback(response) {
         $scope.dataCollProd = response.data;
         $scope.collectionsProductsall = $scope.dataCollProd.products;
-        console.log($scope.collectionsProductsall);
     }, function errorCallback(response) {
         console.log("error 505");  
     });
@@ -206,7 +206,33 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
     $http.post(rute+"php/Products.php").then(function successCallback(response) {
         $scope.dataProd = response.data;
         $scope.productsall = $scope.dataProd.products;
-        console.log($scope.productsall);
+        
+        //pagination
+        $scope.filtroProducts = [];
+        $scope.currentPageProducts = 1;
+        $scope.numPerPageProducts = 40;
+        $scope.maxSize = 8;
+
+        $scope.hacerPagineoProducts = function (arreglo) {
+            if (!arreglo || !arreglo.length) { return; }
+            var principio = (($scope.currentPageProducts - 1) * $scope.numPerPageProducts); 
+            var fin = principio + $scope.numPerPageProducts; 
+            $scope.filtroProducts = arreglo.slice(principio, fin); 
+            console.log(arreglo);
+        }; 
+        $scope.$watch('currentPageProducts',function(){
+            $scope.hacerPagineoProducts($scope.productsall);
+        });
+
+
+        $scope.countproductsall = $scope.productsall.length;
+
+        //$scope.hacerPagineoProducts($scope.productsall);
+
+
+
+
+
         /*
         for(var i in $scope.productsall){
             for(var j in $scope.collectionsProductsall){

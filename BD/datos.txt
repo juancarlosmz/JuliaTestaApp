@@ -1,2 +1,3 @@
-descuento:  ApoloTest
-coleccion:  collectionApoloTest
+HostGator Billing Portal: https://portal.hostgator.com
+Login name / email address: julia@juliatesta.com
+Password: CEH8n=JvKj!h8Dh!

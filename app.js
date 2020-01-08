@@ -1,6 +1,7 @@
 var app = angular.module('JuliaTestaApp', [
   'ngRoute',
-  'empleadoControllers'
+  'empleadoControllers',
+  'ui.bootstrap'
 ]);
 
 app.config(['$routeProvider', '$locationProvider',
@@ -18,12 +19,12 @@ app.config(['$routeProvider', '$locationProvider',
         controller: 'ControllerLogin',
         method: 'GET',
       }).
-      when('/products', {
+      when('/collections', {
         templateUrl: 'partials/Products.html',
         controller: 'AllProducts',
         method: 'GET',
       }).
-      when('/seecollection/:collection_id', {
+      when('/products/:collection_id', {
         templateUrl: 'partials/SeeCollections.html',
         controller: 'ControllerCollectionProduct',
         method: 'GET',

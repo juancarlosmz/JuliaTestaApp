@@ -1,0 +1,91 @@
+/*Para la paginacion*/
+
+
+.pagination{
+    margin: 0px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .pagination input, .pagination button{
+    line-height: 1em;
+    border: 1px solid #d7d7d7;
+    vertical-align: middle;
+    width: 50px;
+    text-align: center;
+  }
+  .pagination input{
+       height: 22px;
+       padding: 0;
+       border-radius: 2px 0px 0px 2px;
+       margin-left: 10px;
+  }
+  
+  .pagination input::-webkit-inner-spin-button, .pagination input::-webkit-outer-spin-button{
+      -webkit-appearance: none;
+  }
+  
+  .pagination button{
+       height: 24px;
+       background-color: #d7d7d7;
+       border-radius: 0px 2px 2px 0px;
+  }
+  
+  .pagination form {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  
+  .pagination button:hover{
+      background-color: #6fb717;
+      border-color: #6fb717;
+      cursor: pointer;
+  }
+  .pagination button:before{
+  
+     content: "";
+     display: inline-block;
+     border-top: 5px solid transparent;
+     border-bottom: 5px solid transparent;
+     border-left: 10px solid white;
+  }
+  
+  
+  
+  .pagination li {
+     display: inline-block !important;
+     margin: 0 3px;
+     vertical-align: middle;
+     cursor: pointer;
+     padding: 5px;
+  }
+  
+  .pagination li a{
+    /*background-color: #6fb71740 !important;*/
+    /*color: #fd9855 !important;*/
+    border: none ;
+    padding: 5px 12px;
+  }
+  .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover{
+    background-color: #6fb7177a ;
+    padding: 5px 12px;
+  }
+  
+  .pagination .is-active {
+     border-bottom: 1px solid black;
+  }
+  /*
+  .pagination .is-disabled {
+     opacity: 0.5;
+  }
+  */
+  .pagination .is-hidden {
+     display: none;
+  }
+  
+  .pagination .has-ellipsis {
+     margin: 0;
+     padding: 0;
+  }
+  
+  /*end css pagination*/
+  
