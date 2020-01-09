@@ -38,16 +38,43 @@
     <hr>
     <!-- Products -->
     <h2>All Products</h2>
+
+    
+
+    <div class="item col-md-4">
+      <input placeholder="Enter keywords here after products finish loading..." class="txtsearch" type="text" ng-model="busquedaprod" ng-keyup="searchtxt(busquedaprod)">
+    </div> 
+
+    <!--
     <div class="row">
       <div class="item col-md-4" ng-repeat="prod in filtroProducts track by $index">
         <p class="title">{{ prod.title }}</p>
       </div>
     </div>
-    <!--PAgination-->
+    <pagination  total-items="countproductsall" ng-model="currentPageProducts" class="pagination-sm" max-size="maxSize"   items-per-page="numPerPageProducts" page="currentPageProducts" ></pagination>
+    <pre>The selected page no: {{currentPageProducts}}</pre>
+    --->
 
-    <ul pagination  total-items="countproductsall" max-size="maxSize"   items-per-page="numPerPageProducts" page="currentPageProducts"></ul>
 
+
+
+    <!------ ejemplo solo test ------>
+    <table class="table">
+      <tr ng-repeat="row in productsall.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))">
+        <td>{{row.title}}</td>
+        <td>{{row.id}}</td>
+      </tr>
+    </table>
+
+    View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> records at a time.
+
+    <pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" class="pagination-sm" items-per-page="itemsPerPage" page="currentPage"></pagination>
+    <pre>The selected page no: {{currentPage}}</pre>
     <!------------>
+
+
+
+
   
     <a style="width: 35% !important; float: right;" style="width: 20% !important;" href="#/" class="btn btn-default btn-block"> Atras</a>
   

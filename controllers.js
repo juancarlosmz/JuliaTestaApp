@@ -162,7 +162,7 @@ empleadoControllers.controller('AllProducts', ['$scope','$http','$location','$ro
            
 }]);
 
-empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http','$location','$routeParams', function($scope,$http,$location,$routeParams) {
+empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http','$location','$routeParams','$filter', function($scope,$http,$location,$routeParams,$filter) {
 
 
     $scope.validation_user = false;
@@ -204,33 +204,90 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
     });
     
     $http.post(rute+"php/Products.php").then(function successCallback(response) {
+        
         $scope.dataProd = response.data;
         $scope.productsall = $scope.dataProd.products;
+        $scope.productsallbusqueda = $scope.dataProd.products;
         
         //pagination
         $scope.filtroProducts = [];
         $scope.currentPageProducts = 1;
         $scope.numPerPageProducts = 40;
         $scope.maxSize = 8;
-
+        $scope.countproductsall = $scope.productsall.length;
+/*
         $scope.hacerPagineoProducts = function (arreglo) {
             if (!arreglo || !arreglo.length) { return; }
             var principio = (($scope.currentPageProducts - 1) * $scope.numPerPageProducts); 
             var fin = principio + $scope.numPerPageProducts; 
             $scope.filtroProducts = arreglo.slice(principio, fin); 
-            console.log(arreglo);
         }; 
+*/
+/*
         $scope.$watch('currentPageProducts',function(){
             $scope.hacerPagineoProducts($scope.productsall);
         });
-
-
-        $scope.countproductsall = $scope.productsall.length;
-
+*/
+       
+        
         //$scope.hacerPagineoProducts($scope.productsall);
 
 
 
+
+
+        //otro script
+        $scope.viewby = 10;
+        $scope.totalItems = $scope.productsall.length;
+        $scope.currentPage = 4;
+        $scope.itemsPerPage = $scope.viewby;
+        $scope.maxSize = 5;
+    
+
+        $scope.setPage = function (pageNo) {
+            $scope.currentPage = pageNo;
+        };
+        
+        $scope.pageChanged = function() {
+            console.log('Page changed to: ' + $scope.currentPage);
+         };
+        
+        $scope.setItemsPerPage = function(num) {
+          $scope.itemsPerPage = num;
+          $scope.currentPage = 1; //reset to first page
+        }
+
+
+        $scope.hacerPagineoProducts2 = function (arreglo) {
+            if (!arreglo || !arreglo.length) { return; }
+            var principio = (($scope.currentPage - 1) * $scope.itemsPerPage); 
+            var fin = principio + $scope.itemsPerPage; 
+            $scope.productsall = arreglo.slice(principio, fin); 
+        }; 
+
+
+        $scope.searchtxt = function(busquedaprod){
+            var buscados = $filter('filter') ($scope.productsallbusqueda, function (prod) {
+                var textobusqueda = prod.title;
+                return (textobusqueda.toLowerCase().indexOf(busquedaprod.toLowerCase()) !== -1); // matches, contains
+            });
+            if(buscados == ''){
+                $scope.dataNoResults = true;
+                $scope.dataResults = false;
+            }else{
+                $scope.dataResults = true;
+                $scope.dataNoResults = false;
+                $scope.totalItems = buscados.length;
+            }
+            if(busquedaprod == ''){
+                //$scope.productsall = $scope.dataProd.products;
+                console.log('esta en blanco');
+            }
+            console.log(busquedaprod);
+            $scope.productsall = buscados;
+            //$scope.hacerPagineoProducts2(buscados);
+
+        }
 
 
         /*
