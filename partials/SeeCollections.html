@@ -38,48 +38,103 @@
     <hr>
     <!-- Products -->
     <h2>All Products</h2>
-
-    
-
-    <div class="item col-md-4">
-      <input placeholder="Enter keywords here after products finish loading..." class="txtsearch" type="text" ng-model="busquedaprod" ng-keyup="searchtxt(busquedaprod)">
-    </div> 
-
-    <!--
+    <br>
+    <!-- Busqueda -->
     <div class="row">
-      <div class="item col-md-4" ng-repeat="prod in filtroProducts track by $index">
-        <p class="title">{{ prod.title }}</p>
+      <div class="col-1">
+        <label class="col-form-label">
+          View
+        </label>
       </div>
+      <div class="col-2">
+         <select class="form-control" ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> 
+      </div> 
+      <div class="col-3">
+        <label class="col-form-label">
+          records at a time.
+        </label>
+      </div>
+      <div class="item col-md-6">
+        <input class="form-control" placeholder="Enter keywords here after products finish loading..."  type="text" ng-model="busquedaprod" ng-keyup="searchtxt(busquedaprod)">
+      </div> 
     </div>
-    <pagination  total-items="countproductsall" ng-model="currentPageProducts" class="pagination-sm" max-size="maxSize"   items-per-page="numPerPageProducts" page="currentPageProducts" ></pagination>
-    <pre>The selected page no: {{currentPageProducts}}</pre>
-    --->
+    <!------------>
+    <br>
 
+    <!-- ver por -->
+    <div class="row">
+      
+    </div> 
+    <!---------->
 
-
-
-    <!------ ejemplo solo test ------>
-    <table class="table">
-      <tr ng-repeat="row in productsall.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))">
-        <td>{{row.title}}</td>
-        <td>{{row.id}}</td>
-      </tr>
+    <!------ products ------>
+    <table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th class="th-sm">Check</th>
+          <th class="th-sm">Title</th>
+          <th class="th-sm">ID</th>
+          <th class="th-sm">Variants</th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="row in productsall.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))">
+          <td style="text-align: center;" >
+            <label class="custom-control custom-checkbox">
+              <input class="custom-control-input"  type="checkbox" ng-model="row.id" ng-click="toggleSelection(row.id)" />
+              <span class="custom-control-indicator"></span>
+            </label>  
+          </td>  
+          <td>{{row.title}}</td>
+          <td>{{row.id}}</td>
+          <td >
+            <table>
+              <thead>
+                <tr>
+                  <th>Color</th>
+                  <th>Price</th>
+                  <th class="th-sm">Compare at Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="variantes in row.variants">
+                    <td>{{variantes.title}}</td>
+                    <td>{{variantes.price}}</td>
+                    <td>{{variantes.compare_at_price}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
     </table>
-
-    View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>3</option><option>5</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select> records at a time.
-
-    <pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" class="pagination-sm" items-per-page="itemsPerPage" page="currentPage"></pagination>
-    <pre>The selected page no: {{currentPage}}</pre>
     <!------------>
 
+    <!-- pagination -->
+    <div class="row">
+      <div class="col-12">
+        <pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" class="pagination-sm" items-per-page="itemsPerPage" page="currentPage" max-size="maxSize"></pagination>
+      </div>
+    </div>
+    <!------------>
+    
+    <div class="row">
+      <div class="col-4">
+        <button type="button" class="btn btn-success" ng-click="GetValue()" >Add discount</button>
+      </div>
+    </div>
+    <hr>
+
+    <br><br>
 
 
 
   
-    <a style="width: 35% !important; float: right;" style="width: 20% !important;" href="#/" class="btn btn-default btn-block"> Atras</a>
+    
   
   
   
     </div>
-  
-  
+
+

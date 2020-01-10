@@ -36,8 +36,8 @@
   }
   
   .pagination button:hover{
-      background-color: #6fb717;
-      border-color: #6fb717;
+      background-color: #231125;
+      border-color: #231125;
       cursor: pointer;
   }
   .pagination button:before{
@@ -61,12 +61,13 @@
   
   .pagination li a{
     /*background-color: #6fb71740 !important;*/
-    /*color: #fd9855 !important;*/
+    color: #fff !important;
     border: none ;
     padding: 5px 12px;
+    background-color: #b99bbb ;
   }
   .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover{
-    background-color: #6fb7177a ;
+    background-color: #1c101d ;
     padding: 5px 12px;
   }
   
@@ -89,3 +90,7 @@
   
   /*end css pagination*/
   
+
+  /*para el checkbox*/
+  
+  /*fin checkbox*/

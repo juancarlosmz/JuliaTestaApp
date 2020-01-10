@@ -5,6 +5,25 @@ var rute = 'http://localhost:50/JuliaTestaApp/';
 
 
 empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location','$timeout', function($scope,$http,$location,$timeout) {
+    
+    $scope.saveduser = localStorage.getItem('todosuser');
+    $scope.SesionUser = JSON.parse($scope.saveduser);
+    //console.log("nuevo nuevo",JSON.stringify($scope.SesionUser));
+
+    for(var i in $scope.SesionUser){
+        $scope.Email = $scope.SesionUser[i]['email'];
+        $scope.Rol = $scope.SesionUser[i]['rol'];
+    }
+    if($scope.Rol == '1'){
+        $scope.validation_user = true;
+        $location.path('/collections');
+    }else{
+        $scope.validation_user = false;
+        $location.path('/');
+    }
+    
+    
+    
     (function ($) {
         "use strict";
         /*==================================================================
@@ -33,7 +52,6 @@ empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location',
             }
             if(check != false){
                 console.log('si entra');
-                //$location.path('/products');
 
                 $scope.dataLoading = true;
                 $timeout(function(){
@@ -195,77 +213,64 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
     });
 
     
-
+    
     $http.post(rute+"php/SeeCollections.php?collection_id="+$routeParams.collection_id).then(function successCallback(response) {
         $scope.dataCollProd = response.data;
         $scope.collectionsProductsall = $scope.dataCollProd.products;
     }, function errorCallback(response) {
         console.log("error 505");  
     });
+
+    $http.post(rute+"php/CountProducts.php").then(function successCallback(response) {
+        $scope.dataCountProducts = response.data;
+        $scope.countPages = Math.ceil($scope.dataCountProducts.count/250);
+        console.log($scope.countPages);
+
+        var MyArrayProducts = [];
+        for(var i=1 ; i <= $scope.countPages; i++){
+            $http.post(rute+"php/ProductsByPage.php?page="+i).then(function successCallback(response) {
+                $scope.ProductsbyPage = response.data;
+                MyArrayProducts.push($scope.ProductsbyPage.products);
+                console.log(MyArrayProducts);
+            }, function errorCallback(response) {
+                console.log("error 505");  
+            });
+        }
+        
+    }, function errorCallback(response) {
+        console.log("error 505");  
+    });
+    
     
     $http.post(rute+"php/Products.php").then(function successCallback(response) {
         
         $scope.dataProd = response.data;
         $scope.productsall = $scope.dataProd.products;
         $scope.productsallbusqueda = $scope.dataProd.products;
-        
-        //pagination
-        $scope.filtroProducts = [];
-        $scope.currentPageProducts = 1;
-        $scope.numPerPageProducts = 40;
-        $scope.maxSize = 8;
-        $scope.countproductsall = $scope.productsall.length;
-/*
-        $scope.hacerPagineoProducts = function (arreglo) {
-            if (!arreglo || !arreglo.length) { return; }
-            var principio = (($scope.currentPageProducts - 1) * $scope.numPerPageProducts); 
-            var fin = principio + $scope.numPerPageProducts; 
-            $scope.filtroProducts = arreglo.slice(principio, fin); 
-        }; 
-*/
-/*
-        $scope.$watch('currentPageProducts',function(){
-            $scope.hacerPagineoProducts($scope.productsall);
-        });
-*/
-       
-        
-        //$scope.hacerPagineoProducts($scope.productsall);
-
-
-
-
-
-        //otro script
+        console.log($scope.productsall);
+        //Para la paginacion
         $scope.viewby = 10;
         $scope.totalItems = $scope.productsall.length;
-        $scope.currentPage = 4;
+        $scope.currentPage = 1;
         $scope.itemsPerPage = $scope.viewby;
         $scope.maxSize = 5;
-    
 
         $scope.setPage = function (pageNo) {
             $scope.currentPage = pageNo;
         };
-        
         $scope.pageChanged = function() {
             console.log('Page changed to: ' + $scope.currentPage);
-         };
-        
+        };
         $scope.setItemsPerPage = function(num) {
           $scope.itemsPerPage = num;
           $scope.currentPage = 1; //reset to first page
         }
-
-
         $scope.hacerPagineoProducts2 = function (arreglo) {
             if (!arreglo || !arreglo.length) { return; }
             var principio = (($scope.currentPage - 1) * $scope.itemsPerPage); 
             var fin = principio + $scope.itemsPerPage; 
             $scope.productsall = arreglo.slice(principio, fin); 
         }; 
-
-
         $scope.searchtxt = function(busquedaprod){
             var buscados = $filter('filter') ($scope.productsallbusqueda, function (prod) {
                 var textobusqueda = prod.title;
@@ -279,16 +284,22 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
                 $scope.dataNoResults = false;
                 $scope.totalItems = buscados.length;
             }
-            if(busquedaprod == ''){
-                //$scope.productsall = $scope.dataProd.products;
-                console.log('esta en blanco');
-            }
-            console.log(busquedaprod);
             $scope.productsall = buscados;
-            //$scope.hacerPagineoProducts2(buscados);
-
         }
-
+        $scope.toggleSelection = function(event) {
+            console.log(event);
+        };
+        $scope.GetValue = function () {
+            var message = "";
+            for (var i = 0; i < $scope.productsall.length; i++) {
+                if ($scope.productsall[i].id) {
+                    var fruitId = $scope.productsall[i].id;
+                    var fruitName = $scope.productsall[i].title;
+                    message += "Value: " + fruitId + " Text: " + fruitName + "\n";
+                }
+            }
+            console.log(message);
+        }
 
         /*
         for(var i in $scope.productsall){

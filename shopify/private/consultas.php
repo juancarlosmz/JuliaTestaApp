@@ -7,8 +7,16 @@ class shopify {
     private $STORE_URL = 'julia-testa.myshopify.com';
     private $PASSWORD = '94fbd59c83fdeb04b5eae14d0a644b95';
 
+    function getCountProducts() {   
+        $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/products/count.json';
+        misPermisos($url);
+    }
     function getViewProducts() {   
         $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/products.json?limit=250&page=1';
+        misPermisos($url);
+    }
+    function getViewProductsPage($page) {   
+        $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/products.json?limit=250&page='.$page;
         misPermisos($url);
     }
     function getViewCollection($collect_id) {   
