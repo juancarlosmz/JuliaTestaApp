@@ -180,7 +180,7 @@ empleadoControllers.controller('AllProducts', ['$scope','$http','$location','$ro
            
 }]);
 
-empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http','$location','$routeParams','$filter', function($scope,$http,$location,$routeParams,$filter) {
+empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http','$location','$routeParams','$filter','$timeout', function($scope,$http,$location,$routeParams,$filter,$timeout) {
 
 
     $scope.validation_user = false;
@@ -226,16 +226,53 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
         $scope.countPages = Math.ceil($scope.dataCountProducts.count/250);
         console.log($scope.countPages);
 
-        var MyArrayProducts = [];
-        for(var i=1 ; i <= $scope.countPages; i++){
-            $http.post(rute+"php/ProductsByPage.php?page="+i).then(function successCallback(response) {
+        //for(var i=1 ; i <= $scope.countPages; i++){
+            $http.post(rute+"php/ProductsByPage.php?page="+1).then(function successCallback(response) {
                 $scope.ProductsbyPage = response.data;
-                MyArrayProducts.push($scope.ProductsbyPage.products);
-                console.log(MyArrayProducts);
+                $scope.ProductsbyPageAll = $scope.ProductsbyPage.products;
+
+
+
+                $timeout(function(){
+                    for(var j in $scope.ProductsbyPageAll){
+                        var modelsend = {
+                            Myid : $scope.ProductsbyPageAll[j]['id'],
+                            Mytitle : $scope.ProductsbyPageAll[j]['title'],
+                            Mybody_html : JSON.stringify($scope.ProductsbyPageAll[j]['body_html']),
+                            Myvendor : $scope.ProductsbyPageAll[j]['vendor'],
+                            Myproduct_type : $scope.ProductsbyPageAll[j]['product_type'],
+                            Mycreated_at : $scope.ProductsbyPageAll[j]['created_at'],
+                            Myhandle : $scope.ProductsbyPageAll[j]['handle'],
+                            Myupdated_at : $scope.ProductsbyPageAll[j]['updated_at'],
+                            Mypublished_at : $scope.ProductsbyPageAll[j]['published_at'],
+                            Mytemplate_suffix : $scope.ProductsbyPageAll[j]['template_suffix'],
+                            Mypublished_scope : $scope.ProductsbyPageAll[j]['published_scope'],
+                            Mytags : $scope.ProductsbyPageAll[j]['tags'],
+                            Myadmin_graphql_api_id : $scope.ProductsbyPageAll[j]['admin_graphql_api_id'],
+                            Myvariants : JSON.stringify($scope.ProductsbyPageAll[j]['variants']),
+                            Myoptions : JSON.stringify($scope.ProductsbyPageAll[j]['options']),
+                            Myimages : JSON.stringify($scope.ProductsbyPageAll[j]['images']),
+                            Myimage : JSON.stringify($scope.ProductsbyPageAll[j]['image']),
+                            MySelected: false
+                        }
+                        var dataSaveProductsPHP = JSON.stringify(modelsend);
+                        //console.log('',dataSaveProductsPHP);
+
+                        $http.post(rute+'api/?a=registrarProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
+                            $scope.dataSKU = response.data;
+                            console.log($scope.dataSKU);
+                            console.log('logrado');
+                        }, function errorCallback(response) {
+                            console.log('no logrado');
+                        });   
+
+                    }
+            }, 2000);
+
             }, function errorCallback(response) {
                 console.log("error 505");  
             });
-        }
+        //}
         
     }, function errorCallback(response) {
         console.log("error 505");  
