@@ -29,6 +29,11 @@ app.config(['$routeProvider', '$locationProvider',
         controller: 'AllProducts',
         method: 'GET',
       }).
+      when('/products', {
+        templateUrl: 'partials/listado.html',
+        controller: 'ControllerProducts',
+        method: 'GET',
+      }).
       when('/products/:collection_id', {
         templateUrl: 'partials/SeeCollections.html',
         controller: 'ControllerCollectionProduct',

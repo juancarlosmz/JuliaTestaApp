@@ -1,0 +1,220 @@
+require 'Shopify.php';
+
+
+inicializar
+
+ $credentials = [
+            'api_key'      => '03d5593a44dc48b7dd43896f79288589',
+            'api_password' => 'b0758995328c5c685fea5b786f54ecf2',
+            'shop_domain'  => 'markerpop.myshopify.com',
+            'type'         => 'private',
+         ];
+$shopify    = new Shopify($credentials);
+
+
+
+
+//
+
+
+
+public function wcreateAction()
+    {
+        $webhook = file_get_contents('php://input');
+        if (!empty($webhook)) {
+            $appmodel   = new AppModel();
+            $product = json_decode($webhook, true);
+                $id     = $product['id'];
+                error_log("create-product webhook ".$id);
+                $title  = stripslashes($product['title']);
+                $vendor = stripslashes($product['vendor']);
+                $type   = stripslashes($product['product_type']);
+                $handle = $product['handle'];
+                $tags   = $product['tags'];
+            if (!empty($tags)) {
+                $tags = str_replace(', ', '|', trim($tags));
+                $tags = "|" . $tags . "|";
+            }
+                $published   = $product['published_at'];
+            if (!empty($published)) {
+                $published = new DateTime($published);
+                $published = $published->format('Y-m-d H:i:s');
+            }
+                $appmodel->save_product($id, $title, $vendor, $type, $handle, $tags, $published);
+                $appmodel->save_tags($id, $product['tags']);
+                $variants = $product['variants'];
+            foreach ($variants as $variant) {
+                $v_id = $variant['id'];
+                $v_title = stripslashes($variant['title']);
+                $v_price = $variant['price']*100;
+                $v_compare = !empty($variant['compare_at_price']) ? $variant['compare_at_price']*100 : null;
+                $v_position = (int) $variant['position'];
+                $v_option1 = $variant['option1'];
+                $v_option2 = $variant['option2'];
+                $v_option3 = $variant['option3'];
+                $v_image = $variant['image_id'];
+                $v_inventory_id = $variant['inventory_item_id'];
+                $v_inventory_policy = ($variant['inventory_policy'] == "continue") ?  1 : 0;
+                $v_inventory_qty = $variant['inventory_quantity'];
+                $v_inventory_oldqty = $variant['old_inventory_quantity'];
+                $discount = 0;  //default
+                if ($v_compare > 0) {
+                    $discount = round(($v_compare - $v_price) / $v_compare, 2) * 10000; //20%=2000
+                }
+                    $appmodel->save_variant(
+                        $v_id,
+                        $id,
+                        $v_title,
+                        $v_price,
+                        $v_compare,
+                        $v_position,
+                        $v_option1,
+                        $v_option2,
+                        $v_option3,
+                        $v_image,
+                        $v_inventory_id,
+                        $v_inventory_policy,
+                        $v_inventory_qty,
+                        $v_inventory_oldqty,
+                        $discount
+                    );
+            }
+                $images = $product['images'];
+            if (!empty($images)) {
+                foreach ($images as $image) {
+                    $i_id = $image['id'];
+                    $i_pos = $image['position'];
+                    $i_src = $image['src'];
+                    $appmodel->save_image($i_id, $id, $i_pos, $i_src);
+                }
+                    $options = $product['options'];
+                if (!empty($options)) {
+                    foreach ($options as $option) {
+                         $o_id = $option['id'];
+                         $o_name = $option['name'];
+                         $o_pos = $option['position'];
+                         $o_values = implode(',', $option['values']);
+                         $appmodel->save_option($o_id, $id, $o_name, $o_pos, $o_values);
+                    }
+                }
+            }
+            //error_log(print_r($product, true));
+            exit('200');
+        } else {
+            die('Invalid Webhook');
+        }
+    }
+    public function wupdateAction()
+    {
+        $webhook = file_get_contents('php://input');
+        if (!empty($webhook)) {
+            //error_log(print_r($product, true));
+            $appmodel   = new AppModel();
+            $product = json_decode($webhook, true);
+                $id     = $product['id'];
+                error_log("update-product webhook ".$id);
+                $title  = stripslashes($product['title']);
+                $vendor = stripslashes($product['vendor']);
+                $type   = stripslashes($product['product_type']);
+                $handle = $product['handle'];
+                $tags   = $product['tags'];
+            if (!empty($tags)) {
+                $tags = str_replace(', ', '|', trim($tags));
+                $tags = "|" . $tags . "|";
+            }
+                $published   = $product['published_at'];
+            if (!empty($published)) {
+                $published = new DateTime($published);
+                $published = $published->format('Y-m-d H:i:s');
+            }
+                $appmodel->update_product($title, $vendor, $type, $handle, $tags, $published, $id);
+                $appmodel->truncate('product_tags', 'product_id', $id);
+                $appmodel->truncate('variants', 'pro_id', $id);
+                $appmodel->truncate('images', 'pro_id', $id);
+                $appmodel->truncate('options', 'pro_id', $id);
+                $appmodel->save_tags($id, $product['tags']);
+                $variants = $product['variants'];
+            foreach ($variants as $variant) {
+                $v_id = $variant['id'];
+                $v_title = stripslashes($variant['title']);
+                $v_price = $variant['price']*100;
+                $v_compare = !empty($variant['compare_at_price']) ? $variant['compare_at_price']*100 : null;
+                $v_position = (int) $variant['position'];
+                $v_option1 = $variant['option1'];
+                $v_option2 = $variant['option2'];
+                $v_option3 = $variant['option3'];
+                $v_image = $variant['image_id'];
+                $v_inventory_id = $variant['inventory_item_id'];
+                $v_inventory_policy = ($variant['inventory_policy'] == "continue") ?  1 : 0;
+                $v_inventory_qty = $variant['inventory_quantity'];
+                $v_inventory_oldqty = $variant['old_inventory_quantity'];
+                $discount = 0;  //default
+                if ($v_compare > 0) {
+                    $discount = round(($v_compare - $v_price) / $v_compare, 2) * 10000; //20%=2000
+                }
+                   $appmodel->save_variant(
+                       $v_id,
+                       $id,
+                       $v_title,
+                       $v_price,
+                       $v_compare,
+                       $v_position,
+                       $v_option1,
+                       $v_option2,
+                       $v_option3,
+                       $v_image,
+                       $v_inventory_id,
+                       $v_inventory_policy,
+                       $v_inventory_qty,
+                       $v_inventory_oldqty,
+                       $discount
+                   );
+            }
+                $images = $product['images'];
+            if (!empty($images)) {
+                foreach ($images as $image) {
+                    $i_id = $image['id'];
+                    $i_pos = $image['position'];
+                    $i_src = $image['src'];
+                    $appmodel->save_image($i_id, $id, $i_pos, $i_src);
+                }
+                    $options = $product['options'];
+                if (!empty($options)) {
+                    foreach ($options as $option) {
+                         $o_id = $option['id'];
+                         $o_name = $option['name'];
+                         $o_pos = $option['position'];
+                         $o_values = implode(',', $option['values']);
+                         $appmodel->save_option($o_id, $id, $o_name, $o_pos, $o_values);
+                    }
+                }
+            }
+            //error_log(print_r($product, true));
+            exit('200');
+        } else {
+            die('Invalid Webhook');
+        }
+    }
+    public function wdeleteAction()
+    {
+         $webhook = file_get_contents('php://input');
+        if (!empty($webhook)) {
+            $product = json_decode($webhook, true);
+          //  error_log(print_r($product, true));
+            $id  = $product['id'];
+            error_log("delete-product webhook ".$id);
+            $this->model->delete_product($id);
+            exit('200');
+        } else {
+            die('Invalid Webhook');
+        }
+    }
+
+
+
+
+
+
+
+
+

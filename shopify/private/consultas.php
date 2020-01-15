@@ -1,7 +1,7 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-include ("permisos.php");
 
+include ("permisos.php");
 class shopify {
     private $API_KEY = 'd5121cb128d137f86325b662e67c5e13';
     private $STORE_URL = 'julia-testa.myshopify.com';
