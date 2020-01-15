@@ -19,6 +19,11 @@ app.config(['$routeProvider', '$locationProvider',
         controller: 'ControllerLogin',
         method: 'GET',
       }).
+      when('/Syncup', {
+        templateUrl: 'partials/Syncup.html',
+        controller: 'ControllerSyncupProduct',
+        method: 'GET',
+      }).
       when('/collections', {
         templateUrl: 'partials/Products.html',
         controller: 'AllProducts',

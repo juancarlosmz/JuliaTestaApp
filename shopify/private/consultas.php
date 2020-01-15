@@ -27,6 +27,10 @@ class shopify {
         $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/collection_listings.json?limit=250&page=1';
         misPermisos($url);
     }
+    function putProduct($id) {   
+        $url = 'https://' . $this->API_KEY . ':' . $this->PASSWORD . '@' . $this->STORE_URL . '/admin/products/'.$id.'.json';
+        misPermisos($url);
+    }
 }
 
 ?>

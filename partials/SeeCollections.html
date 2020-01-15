@@ -72,23 +72,23 @@
       <thead>
         <tr>
           <th class="th-sm">Check</th>
-          <th class="th-sm">Title</th>
           <th class="th-sm">ID</th>
+          <th class="th-sm">Title</th>
           <th class="th-sm">Variants</th>
-          
+          <th class="th-sm">Selected</th>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="row in productsall.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))">
           <td style="text-align: center;" >
             <label class="custom-control custom-checkbox">
-              <input class="custom-control-input"  type="checkbox" ng-model="row.id" ng-click="toggleSelection(row.id)" />
+              <input class="custom-control-input"  type="checkbox" ng-model="row.Selected" ng-click="toggleSelection(row.id)" />
               <span class="custom-control-indicator"></span>
             </label>  
-          </td>  
+          </td>
+          <td>{{row.id}}</td>  
           <td>{{row.title}}</td>
-          <td>{{row.id}}</td>
-          <td >
+          <td>
             <table>
               <thead>
                 <tr>
@@ -97,7 +97,6 @@
                   <th class="th-sm">Compare at Price</th>
                 </tr>
               </thead>
-              <tbody>
                 <tr ng-repeat="variantes in row.variants">
                     <td>{{variantes.title}}</td>
                     <td>{{variantes.price}}</td>
@@ -106,6 +105,7 @@
               </tbody>
             </table>
           </td>
+          <td>{{row.Selected}}</td>
         </tr>
       </tbody>
     </table>

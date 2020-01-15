@@ -37,12 +37,16 @@ switch($action) {
             print_r(json_encode(false));
         }
         break;
+    case 'eliminarParaSicronizar':
+        header('Content-Type: application/json');
+        print_r(json_encode(eliminarSicronizar($fluent)));
+        break;     
     case 'registrarProductosPHP':    
         header('Content-Type: application/json');
         $data = json_decode(utf8_encode(file_get_contents("php://input")), true);
         
         $allid = $data['Myid'];
-        $alltitle = $data['Mytitle'];
+        $alltitle = addslashes($data['Mytitle']);
         $allbody_html = addslashes($data['Mybody_html']);
         $allvendor = $data['Myvendor'];
         $allproduct_type = $data['Myproduct_type'];
@@ -52,7 +56,7 @@ switch($action) {
         $allpublished_at = $data['Mypublished_at'];
         $alltemplate_suffix = $data['Mytemplate_suffix'];
         $allpublished_scope = $data['Mypublished_scope'];
-        $alltags = $data['Mytags'];
+        $alltags = addslashes($data['Mytags']);
         $alladmin_graphql_api_id = $data['Myadmin_graphql_api_id'];
         $allvariants = addslashes($data['Myvariants']);
         $alloptions = addslashes($data['Myoptions']);
@@ -68,9 +72,11 @@ switch($action) {
             print_r(json_encode('Error:'. $sql . "<br>" . $connection->error));
         }
         $connection->close();
-
         break;
-
+    case 'listProducts':
+        header('Content-Type: application/json');
+        print_r(json_encode(listarProductos($fluent)));
+        break;    
     case 'Logout':
         session_start();
         session_destroy();
@@ -97,6 +103,17 @@ function SesionLogin($fluent, $email,$contra){
            ->select('user.*') 
            ->where('email = ? and contra = ?',$email,$contra)
            ->fetch();
+}
+function eliminarSicronizar($fluent){
+    $fluent ->deleteFrom('product')
+            ->execute();   
+    return true;
+}
+
+function listarProductos($fluent){
+    return $fluent
+        ->from('product')
+        ->fetchAll();
 }
 
 

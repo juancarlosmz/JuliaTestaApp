@@ -221,69 +221,35 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
         console.log("error 505");  
     });
 
-    $http.post(rute+"php/CountProducts.php").then(function successCallback(response) {
-        $scope.dataCountProducts = response.data;
-        $scope.countPages = Math.ceil($scope.dataCountProducts.count/250);
-        console.log($scope.countPages);
 
-        //for(var i=1 ; i <= $scope.countPages; i++){
-            $http.post(rute+"php/ProductsByPage.php?page="+1).then(function successCallback(response) {
-                $scope.ProductsbyPage = response.data;
-                $scope.ProductsbyPageAll = $scope.ProductsbyPage.products;
-
-
-
-                $timeout(function(){
-                    for(var j in $scope.ProductsbyPageAll){
-                        var modelsend = {
-                            Myid : $scope.ProductsbyPageAll[j]['id'],
-                            Mytitle : $scope.ProductsbyPageAll[j]['title'],
-                            Mybody_html : JSON.stringify($scope.ProductsbyPageAll[j]['body_html']),
-                            Myvendor : $scope.ProductsbyPageAll[j]['vendor'],
-                            Myproduct_type : $scope.ProductsbyPageAll[j]['product_type'],
-                            Mycreated_at : $scope.ProductsbyPageAll[j]['created_at'],
-                            Myhandle : $scope.ProductsbyPageAll[j]['handle'],
-                            Myupdated_at : $scope.ProductsbyPageAll[j]['updated_at'],
-                            Mypublished_at : $scope.ProductsbyPageAll[j]['published_at'],
-                            Mytemplate_suffix : $scope.ProductsbyPageAll[j]['template_suffix'],
-                            Mypublished_scope : $scope.ProductsbyPageAll[j]['published_scope'],
-                            Mytags : $scope.ProductsbyPageAll[j]['tags'],
-                            Myadmin_graphql_api_id : $scope.ProductsbyPageAll[j]['admin_graphql_api_id'],
-                            Myvariants : JSON.stringify($scope.ProductsbyPageAll[j]['variants']),
-                            Myoptions : JSON.stringify($scope.ProductsbyPageAll[j]['options']),
-                            Myimages : JSON.stringify($scope.ProductsbyPageAll[j]['images']),
-                            Myimage : JSON.stringify($scope.ProductsbyPageAll[j]['image']),
-                            MySelected: false
-                        }
-                        var dataSaveProductsPHP = JSON.stringify(modelsend);
-                        //console.log('',dataSaveProductsPHP);
-
-                        $http.post(rute+'api/?a=registrarProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
-                            $scope.dataSKU = response.data;
-                            console.log($scope.dataSKU);
-                            console.log('logrado');
-                        }, function errorCallback(response) {
-                            console.log('no logrado');
-                        });   
-
-                    }
-            }, 2000);
-
-            }, function errorCallback(response) {
-                console.log("error 505");  
-            });
-        //}
+    $http.post(rute+'api/?a=listProducts').then(function successCallback(response) {  
+        $scope.productsall2 = response.data;
         
-    }, function errorCallback(response) {
-        console.log("error 505");  
-    });
-    
-    
-    $http.post(rute+"php/Products.php").then(function successCallback(response) {
-        
-        $scope.dataProd = response.data;
-        $scope.productsall = $scope.dataProd.products;
-        $scope.productsallbusqueda = $scope.dataProd.products;
+        $scope.productsall = [];
+        for(var i in $scope.productsall2){
+            var modelview = {
+                id : $scope.productsall2[i].id,
+                title : JSON.parse($scope.productsall2[i].title),
+                body_html : JSON.parse($scope.productsall2[i].body_html),
+                vendor : $scope.productsall2[i].vendor,
+                product_type : $scope.productsall2[i].product_type,
+                created_at : $scope.productsall2[i].created_at,
+                handle : $scope.productsall2[i].handle,
+                updated_at : $scope.productsall2[i].updated_at,
+                published_at : $scope.productsall2[i].published_at,
+                template_suffix : $scope.productsall2[i].template_suffix,
+                published_scope : $scope.productsall2[i].published_scope,
+                tags : JSON.parse($scope.productsall2[i].tags),
+                admin_graphql_api_id : $scope.productsall2[i].admin_graphql_api_id,
+                variants : JSON.parse($scope.productsall2[i].variants),
+                options : JSON.parse($scope.productsall2[i].options),
+                images : JSON.parse($scope.productsall2[i].images),
+                image : JSON.parse($scope.productsall2[i].image),
+                Selected : false,
+            };
+            $scope.productsall.push(modelview);
+        }
+        $scope.productsallbusqueda = $scope.productsall;
         console.log($scope.productsall);
         //Para la paginacion
         $scope.viewby = 10;
@@ -329,10 +295,17 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
         $scope.GetValue = function () {
             var message = "";
             for (var i = 0; i < $scope.productsall.length; i++) {
-                if ($scope.productsall[i].id) {
-                    var fruitId = $scope.productsall[i].id;
-                    var fruitName = $scope.productsall[i].title;
-                    message += "Value: " + fruitId + " Text: " + fruitName + "\n";
+                if ($scope.productsall[i].Selected) {
+                    var productId = $scope.productsall[i].id;
+                    var productTitle = $scope.productsall[i].title;
+                    message += "Value: " + productId + " Text: " + productTitle + "\n";
+
+                    $http.post(rute+"php/PutProduct.php?id="+productId).then(function successCallback(response) {
+                        $scope.data = response.data;
+                        console.log($scope.data);
+                    }, function errorCallback(response) {
+                        console.log("error 505");  
+                    });
                 }
             }
             console.log(message);
@@ -354,6 +327,94 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
            
 }]);
 
+
+empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$location','$routeParams','$filter','$timeout', function($scope,$http,$location,$routeParams,$filter,$timeout) {
+    
+    $scope.validation_user = false;
+
+    $scope.saveduser = localStorage.getItem('todosuser');
+    $scope.SesionUser = JSON.parse($scope.saveduser);
+    //console.log("nuevo nuevo",JSON.stringify($scope.SesionUser));
+
+    for(var i in $scope.SesionUser){
+        $scope.Email = $scope.SesionUser[i]['email'];
+        $scope.Rol = $scope.SesionUser[i]['rol'];
+    }
+    if($scope.Rol == '1'){
+        $scope.validation_user = true;
+        //location.reload();
+    }else{
+        $scope.validation_user = false;
+    }
+    
+    $scope.GetClean = function () {
+        $http.get(rute+'api/?a=eliminarParaSicronizar').then(function(response){
+            $timeout(function(){
+                console.log('all deleted');
+            }, 1000);
+        }, function errorCallback(response) {
+            console.log("error 505");  
+        });     
+    }
+
+    $http.post(rute+"php/CountProducts.php").then(function successCallback(response) {
+        $scope.dataCountProducts = response.data;
+        $scope.countPages = Math.ceil($scope.dataCountProducts.count/250);
+        for(var i = 1 ; i <= $scope.countPages ; i++){
+            $scope.countPagesitems = [{num: i}];
+            i++;
+        }
+        console.log($scope.dataCountProducts.count);
+        console.log($scope.countPages);
+    }, function errorCallback(response) {
+        console.log("error 505");  
+    });
+
+    $scope.setPages = function(num) {
+        $scope.ThePages = num;
+        console.log($scope.ThePages);
+        $scope.GetSyncup = function () {
+            $http.post(rute+"php/ProductsByPage.php?page="+$scope.ThePages).then(function successCallback(response) {
+                $scope.ProductsbyPage = response.data;
+                $scope.ProductsbyPageAll = $scope.ProductsbyPage.products;
+                $timeout(function(){
+                    for(var j in $scope.ProductsbyPageAll){
+                        var modelsend = {
+                            Myid : $scope.ProductsbyPageAll[j]['id'],
+                            Mytitle : JSON.stringify($scope.ProductsbyPageAll[j]['title']),
+                            Mybody_html : JSON.stringify($scope.ProductsbyPageAll[j]['body_html']),
+                            Myvendor : $scope.ProductsbyPageAll[j]['vendor'],
+                            Myproduct_type : $scope.ProductsbyPageAll[j]['product_type'],
+                            Mycreated_at : $scope.ProductsbyPageAll[j]['created_at'],
+                            Myhandle : $scope.ProductsbyPageAll[j]['handle'],
+                            Myupdated_at : $scope.ProductsbyPageAll[j]['updated_at'],
+                            Mypublished_at : $scope.ProductsbyPageAll[j]['published_at'],
+                            Mytemplate_suffix : $scope.ProductsbyPageAll[j]['template_suffix'],
+                            Mypublished_scope : $scope.ProductsbyPageAll[j]['published_scope'],
+                            Mytags : JSON.stringify($scope.ProductsbyPageAll[j]['tags']),
+                            Myadmin_graphql_api_id : $scope.ProductsbyPageAll[j]['admin_graphql_api_id'],
+                            Myvariants : JSON.stringify($scope.ProductsbyPageAll[j]['variants']),
+                            Myoptions : JSON.stringify($scope.ProductsbyPageAll[j]['options']),
+                            Myimages : JSON.stringify($scope.ProductsbyPageAll[j]['images']),
+                            Myimage : JSON.stringify($scope.ProductsbyPageAll[j]['image']),
+                            MySelected: false
+                        }
+                        var dataSaveProductsPHP = JSON.stringify(modelsend);
+                        $http.post(rute+'api/?a=registrarProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
+                            $scope.dataSKU = response.data;
+                            console.log($scope.dataSKU);
+                            console.log('logrado');
+                        }, function errorCallback(response) {
+                            console.log('no logrado');
+                        });   
+                    }
+                }, 2000);
+            }, function errorCallback(response) {
+                console.log("error 505");  
+            });
+        }
+    }
+}]);
 
 empleadoControllers.controller('menuController', function($scope,$timeout,$http,$location) {
     $scope.validation_user = false;
