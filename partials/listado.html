@@ -1,15 +1,18 @@
 
 <div  ng-controller="menuController">
     <nav ng-if="validation_user" class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
-      <div  class="container">
-        <a class="navbar-brand js-scroll-trigger" href="#page-top">Julia Testa App</a>
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="/JuliaTestaApp/products">Julia Testa App</a>
         <button class="navbar-toggler navbar-toggler-right btnmenucolor" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto my-2 my-lg-0">
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/collections">Home</a>
+              <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/products">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/Syncup">Syncup</a>
             </li>
             <li class="nav-item">
               <a style="cursor: pointer;" class="nav-link js-scroll-trigger" ng-click="CloseSession()" >Log out</a>
@@ -21,7 +24,7 @@
   </div>
   
   
-  <div class="container"  ng-if="validation_user">
+  <div  ng-if="validation_user">
     <br><br><br><br>
 
     <hr>
@@ -32,19 +35,21 @@
     <!-- Busqueda -->
     <div class="row">
       <div class="item col-md-6">
-        <input class="form-control" placeholder="Enter discount here..."  type="text" ng-model="valdiscount">
+        <input id="idvaldicount" class="form-control" placeholder="Enter discount here..."  type="text" ng-model="valdiscount" required>
       </div> 
+      <div class="item col-md-6" ng-if="mensaje">
+        <div class="alert alert-danger" role="alert">
+          <label class="col-form-label">
+            Please enter a quantity
+          </label>
+        </div>
+      </div>
     </div>
     <!------------>
     <br>
 
-    <!-- ver por -->
-    <div class="row">
-      
-    </div> 
-    <!---------->
-
     <!------ products ------>
+    <div class="table-responsive">
     <table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
       <thead>
         <tr>
@@ -52,45 +57,50 @@
           <th class="th-sm">ID</th>
           <th class="th-sm">Title</th>
           <th class="th-sm">Variants</th>
-          <th class="th-sm">Selected</th>
+          <th class="th-sm">Check</th>
+          <th class="th-sm">With discount</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody >
         <tr ng-repeat="row in productsall.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))">
-          <td style="text-align: center;" >
-            <label class="custom-control custom-checkbox">
-              <input class="custom-control-input"  type="checkbox" ng-model="row.Selected" ng-click="toggleSelection(row.id)" />
-              <span class="custom-control-indicator"></span>
-            </label>  
-          </td>
-          <td>{{row.id}}</td>  
-          <td>{{row.title}}</td>
-          <td>
-            <table>
-              <thead>
-                <tr>
-                  <th class="th-sm col-md-2">Color</th>
-                  <th class="th-sm col-md-2">Price</th>
-                  <th class="th-sm col-md-2">Compare at Price</th>
-                </tr>
-              </thead>
-                <tr ng-repeat="variantes in row.variants">
-                    <td>{{variantes.title}}</td>
-                    <td>{{variantes.price}}</td>
-                    <td>{{variantes.compare_at_price}}</td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-          <td>{{row.Selected}}</td>
+
+            <td style="text-align: center;" >
+              <label class="custom-control custom-checkbox">
+                <input class="custom-control-input"  type="checkbox" ng-model="row.Selected" ng-click="toggleSelection(row.id)" />
+                <span class="custom-control-indicator"></span>
+              </label>  
+            </td>
+            <td class="Mystyle {{row.mySelected}}">{{row.id}}</td>  
+            <td class="Mystyle {{row.mySelected}}">{{row.title}}</td>
+            <td class="Mystyle {{row.mySelected}}">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="th-sm col-md-2">Color</th>
+                    <th class="th-sm col-md-2">Price</th>
+                    <th class="th-sm col-md-2">Compare at Price</th>
+                  </tr>
+                </thead>
+                  <tr ng-repeat="variantes in row.variants">
+                      <td>{{variantes.title}}</td>
+                      <td>{{variantes.price}}</td>
+                      <td>{{variantes.compare_at_price}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td class="Mystyle {{row.mySelected}}">{{row.Selected}}</td>
+            <td class="Mystyle {{row.mySelected}}">{{row.mySelected}}</td>
+
         </tr>
       </tbody>
     </table>
+    </div>
     <!------------>
 
     <!-- pagination -->
     <div class="row">
-      <div class="col-12">
+      <div class="col-8">
         <pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" class="pagination-sm" items-per-page="itemsPerPage" page="currentPage" max-size="maxSize"></pagination>
       </div>
     </div>
@@ -99,6 +109,9 @@
     <div class="row">
       <div class="col-4">
         <button type="button" class="btn btn-success" ng-click="GetValue(valdiscount)" >Add discount</button>
+      </div>
+      <div class="col-4" ng-if="loading">
+        <img src="img/loading.gif" >
       </div>
     </div>
     <hr>

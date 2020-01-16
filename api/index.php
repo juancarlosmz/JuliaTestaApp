@@ -44,7 +44,7 @@ switch($action) {
     case 'registrarProductosPHP':    
         header('Content-Type: application/json');
         $data = json_decode(utf8_encode(file_get_contents("php://input")), true);
-        
+
         $allid = $data['Myid'];
         $alltitle = addslashes($data['Mytitle']);
         $allbody_html = addslashes($data['Mybody_html']);
@@ -65,14 +65,43 @@ switch($action) {
         $allSelected = $data['MySelected'];
         $valores = '("' . $allid . '", "' . $alltitle . '", "' . $allbody_html . '" , "' . $allvendor . '" , "' . $allproduct_type . '" , "' . $allcreated_at .'" , "'. $allhandle . '" , "' . $allupdated_at . '" , "'. $allpublished_at .'" , "'. $alltemplate_suffix .'" , "'. $allpublished_scope .'" , "'. $alltags . '" , "'. $alladmin_graphql_api_id . '" , "'. $allvariants . '" , "'. $alloptions . '" , "'. $allimages . '" , "'. $allimage . '" , "'. $allSelected . '" )';
 
-        $sql = "INSERT INTO product (id,title, body_html, vendor,product_type, created_at,handle,updated_at,published_at,template_suffix,published_scope,tags,admin_graphql_api_id,variants,options,images,image,Selected) VALUES $valores";
+        if($allid > 0){
+            $sql = "INSERT INTO product (id,title, body_html, vendor,product_type, created_at,handle,updated_at,published_at,template_suffix,published_scope,tags,admin_graphql_api_id,variants,options,images,image,Selected) VALUES $valores";
+            if ($connection->multi_query($sql) === TRUE){
+                print_r(json_encode('New records created successfully'));
+            }else{
+                print_r(json_encode('Error:'. $sql . "<br>" . $connection->error));
+            }
+            $connection->close();
+        }
+        break;
+    case 'updateProductosPHP':    
+        header('Content-Type: application/json');
+        $data = json_decode(utf8_encode(file_get_contents("php://input")), true);
+        
+        $allid = $data['Myid'];
+        $alltags = addslashes($data['Mytags']);
+        $allvariants = addslashes($data['Myvariants']);
+        $allSelected = $data['MySelected'];
+
+        /*
+        $valores = '("' . $allid .'" , "'. $alltags . '" , "'. $allvariants . '" , "'. $allSelected . '" )';
+        print_r(json_encode($valores));
+*/
+
+        $sql = "UPDATE product SET tags='$alltags', variants='$allvariants', Selected='$allSelected' WHERE id=$allid";
+
+        /*
+        $sql = "UPDATE product (id,tags,variants,Selected) VALUES $valores";
+        */
         if ($connection->multi_query($sql) === TRUE){
-            print_r(json_encode('New records created successfully'));
+            print_r(json_encode('New records updated successfully'));
         }else{
             print_r(json_encode('Error:'. $sql . "<br>" . $connection->error));
         }
         $connection->close();
-        break;
+        
+        break;    
     case 'listProducts':
         header('Content-Type: application/json');
         print_r(json_encode(listarProductos($fluent)));

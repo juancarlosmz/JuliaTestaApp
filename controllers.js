@@ -1,7 +1,7 @@
 var empleadoControllers = angular.module('empleadoControllers', []);
 
 var rute = 'http://localhost:50/JuliaTestaApp/';
-
+'use strict';
 
 
 empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location','$timeout', function($scope,$http,$location,$timeout) {
@@ -9,14 +9,13 @@ empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location',
     $scope.saveduser = localStorage.getItem('todosuser');
     $scope.SesionUser = JSON.parse($scope.saveduser);
     //console.log("nuevo nuevo",JSON.stringify($scope.SesionUser));
-
     for(var i in $scope.SesionUser){
         $scope.Email = $scope.SesionUser[i]['email'];
         $scope.Rol = $scope.SesionUser[i]['rol'];
     }
-    if($scope.Rol == '1'){
+    if($scope.Rol == '1'  && $scope.Email != ""){
         $scope.validation_user = true;
-        $location.path('/collections');
+        $location.path('/products');
     }else{
         $scope.validation_user = false;
         $location.path('/');
@@ -25,7 +24,6 @@ empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location',
     
     
     (function ($) {
-        "use strict";
         /*==================================================================
         [ Focus input ]*/
         $('.input100').each(function(){
@@ -198,6 +196,7 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
         //location.reload();
     }else{
         $scope.validation_user = false;
+        $location.path('/');
     }
 
     $http.post(rute+"php/Collections.php").then(function successCallback(response) {
@@ -333,10 +332,7 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
 
 
 empleadoControllers.controller('ControllerProducts', ['$scope','$http','$location','$routeParams','$filter','$timeout', function($scope,$http,$location,$routeParams,$filter,$timeout) {
-
-
     $scope.validation_user = false;
-
     $scope.saveduser = localStorage.getItem('todosuser');
     $scope.SesionUser = JSON.parse($scope.saveduser);
     //console.log("nuevo nuevo",JSON.stringify($scope.SesionUser));
@@ -345,16 +341,22 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
         $scope.Email = $scope.SesionUser[i]['email'];
         $scope.Rol = $scope.SesionUser[i]['rol'];
     }
-    if($scope.Rol == '1'){
+
+    if($scope.Rol == '1' && $scope.Email != ""){
         $scope.validation_user = true;
         //location.reload();
     }else{
         $scope.validation_user = false;
+        $location.path('/');
     }
 
 
 
     $http.post(rute+'api/?a=listProducts').then(function successCallback(response) {  
+        //mensajes emergenetes
+        $scope.mensaje = false;
+        $scope.loading = false;
+        //
         $scope.productsall2 = response.data;
         
         $scope.productsall = [];
@@ -377,12 +379,13 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
                 options : JSON.parse($scope.productsall2[i].options),
                 images : JSON.parse($scope.productsall2[i].images),
                 image : JSON.parse($scope.productsall2[i].image),
+                mySelected : $scope.productsall2[i].Selected,
                 Selected : false,
             };
             $scope.productsall.push(modelview);
         }
         $scope.productsallbusqueda = $scope.productsall;
-        console.log($scope.productsall);
+
         //Para la paginacion
         $scope.viewby = 50;
         $scope.totalItems = $scope.productsall.length;
@@ -390,81 +393,76 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
         $scope.itemsPerPage = $scope.viewby;
         $scope.maxSize = 5;
 
-        $scope.setPage = function (pageNo) {
-            $scope.currentPage = pageNo;
-        };
-        $scope.pageChanged = function() {
-            console.log('Page changed to: ' + $scope.currentPage);
-        };
-        $scope.setItemsPerPage = function(num) {
-          $scope.itemsPerPage = num;
-          $scope.currentPage = 1; //reset to first page
-        }
-        $scope.hacerPagineoProducts2 = function (arreglo) {
-            if (!arreglo || !arreglo.length) { return; }
-            var principio = (($scope.currentPage - 1) * $scope.itemsPerPage); 
-            var fin = principio + $scope.itemsPerPage; 
-            $scope.productsall = arreglo.slice(principio, fin); 
-        }; 
-
-
-        $scope.toggleSelection = function(event) {
-            console.log(event);
-        };
         $scope.GetValue = function (valdiscount) {
-            
-            var myvaldiscount = valdiscount /100;
-            console.log(myvaldiscount);
-            var MyArray = [];
-            for (var i = 0; i < $scope.productsall.length; i++) {
-                if ($scope.productsall[i].Selected) {
-                    var productId = parseInt($scope.productsall[i].id);
-                    var productTag = $scope.productsall[i].tags+',tagDiscount';
-                    var productVariants = $scope.productsall[i].variants;
-                    var variants =[];
-                    for(var j= 0; j< productVariants.length;j++){
-                        var modelvariants = {
-                            id: productVariants[j].id,
-                            price: String(productVariants[j].price*myvaldiscount),
-                            compare_at_price: productVariants[j].price,
+            console.log(valdiscount);
+            if(valdiscount == undefined){
+                $scope.mensaje = true;
+                document.getElementById("idvaldicount").focus();
+                $timeout(function(){
+                    $scope.mensaje = false;
+                }, 2000);
+            }else{
+                $scope.loading = true;
+                var myvaldiscount = valdiscount /100;
+                console.log(myvaldiscount);
+                var MyArray = [];
+                for (var i = 0; i < $scope.productsall.length; i++) {
+                    if ($scope.productsall[i].Selected) {
+                        var productId = parseInt($scope.productsall[i].id);
+                        var productTag = $scope.productsall[i].tags+',tagDiscount';
+                        var productVariants = $scope.productsall[i].variants;
+                        var variants =[];
+                        for(var j= 0; j< productVariants.length;j++){
+                            var modelvariants = {
+                                id: productVariants[j].id,
+                                price: String(productVariants[j].price*myvaldiscount),
+                                compare_at_price: productVariants[j].price,
+                            }
+                            variants.push(modelvariants);
                         }
-                        variants.push(modelvariants);
+                        var model = {
+                            id: productId,
+                            tags: productTag,
+                            variants,
+                        }
+                        MyArray.push(model);
                     }
-                    var model = {
-                        id: productId,
-                        tags: productTag,
-                        variants,
+                }
+                //console.log(MyArray);
+                SendMyArray = 'myData='+JSON.stringify(MyArray);
+                //para registrar a mi bd mando el otro array 
+                for(var j in MyArray){
+                    var modelsend = {
+                        Myid : MyArray[j]['id'],
+                        Mytags : JSON.stringify(MyArray[j]['tags']),
+                        Myvariants : JSON.stringify(MyArray[j]['variants']),
+                        MySelected: "true"
                     }
-
-                    MyArray.push(model);
-
-
+                    var dataSaveProductsPHP = JSON.stringify(modelsend);
+                    console.log(dataSaveProductsPHP);
+                    $http.post(rute+'api/?a=updateProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
+                        $scope.dataSKU = response.data;
+                        $http({
+                            method : 'POST',
+                            url : rute+'php/PutProduct.php',
+                            data: SendMyArray,
+                            headers : {'Content-Type': 'application/x-www-form-urlencoded'}  
+                        }).then(function successCallback(response){
+                            $scope.ladata = response;
+                            $timeout(function(){
+                                $scope.loading = false;
+                                location.reload();
+                            }, 500);
+                        }, function errorCallback(response) {
+                            console.log("error 505");  
+                        }); 
+                        console.log('logrado');
+                    }, function errorCallback(response) {
+                        console.log('no logrado');
+                    });  
                 }
             }
-
-/*
-                    $http.post(rute+"php/PutProduct.php?id="+productId).then(function successCallback(response) {
-                        $scope.data = response.data;
-                        console.log($scope.data);
-                    }, function errorCallback(response) {
-                        console.log("error 505");  
-                    });
-*/
-            console.log(MyArray);
-            SendMyArray = 'myData='+JSON.stringify(MyArray);
-
-            $http({
-                method : 'POST',
-                url : rute+'php/PutProduct.php',
-                data: SendMyArray,
-                headers : {'Content-Type': 'application/x-www-form-urlencoded'}  
-            }).then(function successCallback(response){
-                $scope.ladata = response;
-                console.log($scope.ladata);
-            }, function errorCallback(response) {
-                console.log("error 505");  
-            });      
-
+               
         }
 
     }, function errorCallback(response) {
@@ -477,7 +475,12 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
 
 
 empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$location','$routeParams','$filter','$timeout', function($scope,$http,$location,$routeParams,$filter,$timeout) {
-    
+    //mensajes emergenetes
+    $scope.mensaje = false;
+    $scope.loading = false;
+    $scope.activaSync = false;
+    //
+
     $scope.validation_user = false;
 
     $scope.saveduser = localStorage.getItem('todosuser');
@@ -488,19 +491,26 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
         $scope.Email = $scope.SesionUser[i]['email'];
         $scope.Rol = $scope.SesionUser[i]['rol'];
     }
-    if($scope.Rol == '1'){
+    if($scope.Rol == '1'  && $scope.Email != ""){
         $scope.validation_user = true;
         //location.reload();
     }else{
         $scope.validation_user = false;
+        $location.path('/');
     }
     
     $scope.GetClean = function () {
         $http.get(rute+'api/?a=eliminarParaSicronizar').then(function(response){
+            $scope.loading = true;
             $timeout(function(){
-                console.log('all deleted');
-            }, 1000);
+                $scope.loading = false;
+                $scope.activaSync = true;
+            }, 2000);
         }, function errorCallback(response) {
+            $scope.loading = true;
+            $timeout(function(){
+                $scope.loading = false;
+            }, 2000);
             console.log("error 505");  
         });     
     }
@@ -508,16 +518,85 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
     $http.post(rute+"php/CountProducts.php").then(function successCallback(response) {
         $scope.dataCountProducts = response.data;
         $scope.countPages = Math.ceil($scope.dataCountProducts.count/250);
-        for(var i = 1 ; i <= $scope.countPages ; i++){
-            $scope.countPagesitems = [{num: i}];
-            i++;
+        $scope.GetSyncup = function () {
+            $scope.GetClean();
+            $timeout(function(){
+                function registrarProductos(page){
+                    $http.post(rute+"php/ProductsByPage.php?page="+page).then(function successCallback(response) {
+                        $scope.loading = true;
+                        $scope.ProductsbyPage = response.data;
+                        $scope.ProductsbyPageAll = $scope.ProductsbyPage.products;
+                        $timeout(function(){
+                            for(var j in $scope.ProductsbyPageAll){
+                                var modelsend = [];
+                                modelsend = {
+                                    Myid : $scope.ProductsbyPageAll[j]['id'],
+                                    Mytitle : JSON.stringify($scope.ProductsbyPageAll[j]['title']),
+                                    Mybody_html : JSON.stringify($scope.ProductsbyPageAll[j]['body_html']),
+                                    Myvendor : $scope.ProductsbyPageAll[j]['vendor'],
+                                    Myproduct_type : $scope.ProductsbyPageAll[j]['product_type'],
+                                    Mycreated_at : $scope.ProductsbyPageAll[j]['created_at'],
+                                    Myhandle : $scope.ProductsbyPageAll[j]['handle'],
+                                    Myupdated_at : $scope.ProductsbyPageAll[j]['updated_at'],
+                                    Mypublished_at : $scope.ProductsbyPageAll[j]['published_at'],
+                                    Mytemplate_suffix : $scope.ProductsbyPageAll[j]['template_suffix'],
+                                    Mypublished_scope : $scope.ProductsbyPageAll[j]['published_scope'],
+                                    Mytags : JSON.stringify($scope.ProductsbyPageAll[j]['tags']),
+                                    Myadmin_graphql_api_id : $scope.ProductsbyPageAll[j]['admin_graphql_api_id'],
+                                    Myvariants : JSON.stringify($scope.ProductsbyPageAll[j]['variants']),
+                                    Myoptions : JSON.stringify($scope.ProductsbyPageAll[j]['options']),
+                                    Myimages : JSON.stringify($scope.ProductsbyPageAll[j]['images']),
+                                    Myimage : JSON.stringify($scope.ProductsbyPageAll[j]['image']),
+                                    MySelected: false
+                                }
+                                var dataSaveProductsPHP = JSON.stringify(modelsend);
+                                $http.post(rute+'api/?a=registrarProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
+                                    $scope.dataSKU = response.data;
+                                    $scope.loading = false;
+                                    console.log($scope.dataSKU);
+                                    console.log('logrado');
+                                }, function errorCallback(response) {
+                                    console.log('no logrado');
+                                });   
+                            }
+                        }, 2000);
+                    }, function errorCallback(response) {
+                        console.log("error 505");  
+                    });
+                }
+
+                for(var i = 1 ; i <= $scope.countPages ; i++){
+                    if(i == 1){
+                        registrarProductos(1);
+                    }
+                    if(i == 2){
+                        $timeout(function(){
+                            registrarProductos(2);
+                        }, 10000);
+                    }
+                    if(i == 3){
+                        $timeout(function(){
+                            registrarProductos(3);
+                        }, 20000);
+                    }
+                    if(i == 4){
+                        $timeout(function(){
+                            registrarProductos(4);
+                        }, 30000);
+                    }
+                }
+            }, 3000);   
         }
+
+
         console.log($scope.dataCountProducts.count);
         console.log($scope.countPages);
     }, function errorCallback(response) {
         console.log("error 505");  
     });
 
+
+/* 
     $scope.setPages = function(num) {
         $scope.ThePages = num;
         console.log($scope.ThePages);
@@ -562,6 +641,9 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
             });
         }
     }
+*/
+
+
 }]);
 
 empleadoControllers.controller('menuController', function($scope,$timeout,$http,$location) {
@@ -575,7 +657,7 @@ empleadoControllers.controller('menuController', function($scope,$timeout,$http,
         $scope.Email = $scope.SesionUser[i]['email'];
         $scope.Rol = $scope.SesionUser[i]['rol'];
     }
-    if($scope.Rol == '1' || $scope.Rol == '2'){
+    if($scope.Rol == '1'  && $scope.Email != ""){
         $scope.validation_user = true;
     }else{
         $scope.validation_user = false;

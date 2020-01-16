@@ -53,10 +53,10 @@
   
   .pagination li {
      display: inline-block !important;
-     margin: 0 3px;
+     margin: 0 0px;
      vertical-align: middle;
      cursor: pointer;
-     padding: 5px;
+     padding: 2px;
   }
   
   .pagination li a{
@@ -91,6 +91,11 @@
   /*end css pagination*/
   
 
-  /*para el checkbox*/
-  
-  /*fin checkbox*/
+  /*products whit discount*/
+  .Mystyle.true{
+
+      background-color: rgba(131, 70, 138, 0.24);
+  }
+  body{
+   background: #f2f2f2 !important;
+  }

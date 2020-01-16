@@ -2,14 +2,17 @@
 <div  ng-controller="menuController">
   <nav ng-if="validation_user" class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
     <div  class="container">
-      <a class="navbar-brand js-scroll-trigger" href="#page-top">Julia Testa App</a>
+      <a class="navbar-brand js-scroll-trigger" href="/JuliaTestaApp/products">Julia Testa App</a>
       <button class="navbar-toggler navbar-toggler-right btnmenucolor" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto my-2 my-lg-0">
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/collections">Home</a>
+            <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/products">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="/JuliaTestaApp/Syncup">Syncup</a>
           </li>
           <li class="nav-item">
             <a style="cursor: pointer;" class="nav-link js-scroll-trigger" ng-click="CloseSession()" >Log out</a>
@@ -26,24 +29,31 @@
   
  
   <div class="row">
+    
+<!--
     <div class="col-4">
       <button type="button" class="btn btn-success" ng-click="GetClean()" >Clean</button>
     </div>
-
+-->
     <div class="col-4">
       <button type="button" class="btn btn-success" ng-click="GetSyncup()" >Sync Up</button>
     </div>
-    {{countPagesitems}}
+    <div class="col-4" ng-if="loading">
+      <img src="img/loading.gif" >
+    </div>
+
+<!--
     <div class="col-2">
       <select class="form-control" ng-model="viewby" ng-change="setPages(viewby)">
         <option ng-repeat="page in countPagesitems" >{{page.num}}</option>
         <option>2</option>
       </select> 
     </div>
+-->
 
 
-    
   </div>
+
 
 </div>
 
