@@ -29,29 +29,21 @@
   
  
   <div class="row">
-    
-<!--
-    <div class="col-4">
-      <button type="button" class="btn btn-success" ng-click="GetClean()" >Clean</button>
-    </div>
--->
     <div class="col-4">
       <button type="button" class="btn btn-success" ng-click="GetSyncup()" >Sync Up</button>
     </div>
-    <div class="col-4" ng-if="loading">
-      <img src="img/loading.gif" >
+    <div class="col-8" ng-if="loading">
+      <label class="col-form-label" ng-if="countProducts != totalproducts">
+        <img src="img/loading.gif" >
+        synchronizing {{countProducts}} of {{totalproducts}}  products
+      </label>
     </div>
-
-<!--
-    <div class="col-2">
-      <select class="form-control" ng-model="viewby" ng-change="setPages(viewby)">
-        <option ng-repeat="page in countPagesitems" >{{page.num}}</option>
-        <option>2</option>
-      </select> 
+    <br><br>
+    <div class="col-8">
+      <label class="col-form-label" ng-if="countProducts == totalproducts">
+        {{countProducts}} of {{totalproducts}}  synchronized products
+      </label>
     </div>
--->
-
-
   </div>
 
 

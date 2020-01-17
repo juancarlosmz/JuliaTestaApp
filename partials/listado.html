@@ -61,6 +61,7 @@
           <th class="th-sm">With discount</th>
         </tr>
       </thead>
+      
       <tbody >
         <tr ng-repeat="row in productsall.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))">
 
@@ -96,8 +97,15 @@
       </tbody>
     </table>
     </div>
-    <!------------>
 
+    <div class="row loadproducts" ng-if="loadingAll">
+      <div class="col-12" >
+        <img src="img/loading.gif" >
+      </div>
+    </div>
+    <!------------>
+    <br>
+    <hr>
     <!-- pagination -->
     <div class="row">
       <div class="col-8">
@@ -105,7 +113,7 @@
       </div>
     </div>
     <!------------>
-
+    <hr>
     <div class="row">
       <div class="col-4">
         <button type="button" class="btn btn-success" ng-click="GetValue(valdiscount)" >Add discount</button>

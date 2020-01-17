@@ -73,6 +73,7 @@ switch($action) {
                 print_r(json_encode('Error:'. $sql . "<br>" . $connection->error));
             }
             $connection->close();
+            usleep(600000);
         }
         break;
     case 'updateProductosPHP':    

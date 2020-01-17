@@ -96,6 +96,13 @@
 
       background-color: rgba(131, 70, 138, 0.24);
   }
+  .loadlogin{
+   text-align: center;
+  }
+  .loadproducts{
+   text-align: center;
+   padding: 100px;
+  }
   body{
    background: #f2f2f2 !important;
   }

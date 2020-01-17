@@ -5,7 +5,7 @@ var rute = 'http://localhost:50/JuliaTestaApp/';
 
 
 empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location','$timeout', function($scope,$http,$location,$timeout) {
-    
+    $scope.loading = false;
     $scope.saveduser = localStorage.getItem('todosuser');
     $scope.SesionUser = JSON.parse($scope.saveduser);
     //console.log("nuevo nuevo",JSON.stringify($scope.SesionUser));
@@ -51,7 +51,7 @@ empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location',
             if(check != false){
                 console.log('si entra');
 
-                $scope.dataLoading = true;
+                $scope.loading = true;
                 $timeout(function(){
                     var model = {
                         email: $scope.email,
@@ -65,7 +65,7 @@ empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location',
 
                         if(consulta == false){
                             $scope.error = 'Email or password is incorrect';
-                            $scope.dataLoading = false;
+                            $scope.loading = false;
                             $timeout(function(){
                                 $scope.error = false;
                             }, 3000);
@@ -78,7 +78,7 @@ empleadoControllers.controller('ControllerLogin', ['$scope','$http','$location',
                             localStorage.setItem('todosuser', JSON.stringify($scope.todosuser));
                             console.log('ya paso');
                             $timeout(function(){
-                                $scope.dataLoading = false;
+                                $scope.loading = false;
                                 $location.path('/products');
                                 
                             }, 50);
@@ -333,6 +333,7 @@ empleadoControllers.controller('ControllerCollectionProduct', ['$scope','$http',
 
 empleadoControllers.controller('ControllerProducts', ['$scope','$http','$location','$routeParams','$filter','$timeout', function($scope,$http,$location,$routeParams,$filter,$timeout) {
     $scope.validation_user = false;
+    $scope.loadingAll = true;
     $scope.saveduser = localStorage.getItem('todosuser');
     $scope.SesionUser = JSON.parse($scope.saveduser);
     //console.log("nuevo nuevo",JSON.stringify($scope.SesionUser));
@@ -355,9 +356,14 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
     $http.post(rute+'api/?a=listProducts').then(function successCallback(response) {  
         //mensajes emergenetes
         $scope.mensaje = false;
+        
         $scope.loading = false;
         //
         $scope.productsall2 = response.data;
+
+        if($scope.productsall2.length >= '1'){
+            $scope.loadingAll = false;
+        }
         
         $scope.productsall = [];
         for(var i in $scope.productsall2){
@@ -384,6 +390,7 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
             };
             $scope.productsall.push(modelview);
         }
+        
         $scope.productsallbusqueda = $scope.productsall;
 
         //Para la paginacion
@@ -480,6 +487,7 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
     $scope.loading = false;
     $scope.activaSync = false;
     //
+    $scope.countProducts = 0;
 
     $scope.validation_user = false;
 
@@ -502,25 +510,25 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
     $scope.GetClean = function () {
         $http.get(rute+'api/?a=eliminarParaSicronizar').then(function(response){
             $scope.loading = true;
-            $timeout(function(){
-                $scope.loading = false;
+            //$timeout(function(){
                 $scope.activaSync = true;
-            }, 2000);
+            //}, 2000);
         }, function errorCallback(response) {
             $scope.loading = true;
-            $timeout(function(){
-                $scope.loading = false;
-            }, 2000);
+            //$timeout(function(){
+                
+            //}, 2000);
             console.log("error 505");  
         });     
     }
 
     $http.post(rute+"php/CountProducts.php").then(function successCallback(response) {
         $scope.dataCountProducts = response.data;
-        $scope.countPages = Math.ceil($scope.dataCountProducts.count/250);
+        $scope.totalproducts = $scope.dataCountProducts.count;
+        $scope.countPages = Math.ceil($scope.totalproducts/250);
         $scope.GetSyncup = function () {
             $scope.GetClean();
-            $timeout(function(){
+            //$timeout(function(){
                 function registrarProductos(page){
                     $http.post(rute+"php/ProductsByPage.php?page="+page).then(function successCallback(response) {
                         $scope.loading = true;
@@ -528,6 +536,7 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
                         $scope.ProductsbyPageAll = $scope.ProductsbyPage.products;
                         $timeout(function(){
                             for(var j in $scope.ProductsbyPageAll){
+                                
                                 var modelsend = [];
                                 modelsend = {
                                     Myid : $scope.ProductsbyPageAll[j]['id'],
@@ -550,21 +559,29 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
                                     MySelected: false
                                 }
                                 var dataSaveProductsPHP = JSON.stringify(modelsend);
+                                //$timeout(function(){
                                 $http.post(rute+'api/?a=registrarProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
+                                    /*
                                     $scope.dataSKU = response.data;
                                     $scope.loading = false;
                                     console.log($scope.dataSKU);
                                     console.log('logrado');
+                                    */
+                                   $scope.contador = i++;
+                                   $scope.countProducts = $scope.contador- 2;
+                                   //console.log($scope.countProducts);
+
                                 }, function errorCallback(response) {
                                     console.log('no logrado');
                                 });   
+                                //}, 2000);
                             }
                         }, 2000);
                     }, function errorCallback(response) {
                         console.log("error 505");  
                     });
                 }
-
+                
                 for(var i = 1 ; i <= $scope.countPages ; i++){
                     if(i == 1){
                         registrarProductos(1);
@@ -585,7 +602,7 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
                         }, 30000);
                     }
                 }
-            }, 3000);   
+            //}, 3000);   
         }
 
 
