@@ -92,10 +92,13 @@
   
 
   /*products whit discount*/
+  /*
   .Mystyle.true{
-
       background-color: rgba(131, 70, 138, 0.24);
-  }
+  }*/
+  .Mystyle.tagDiscount{
+   background-color: rgba(131, 70, 138, 0.24);
+}
   .loadlogin{
    text-align: center;
   }

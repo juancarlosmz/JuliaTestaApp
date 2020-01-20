@@ -57,7 +57,7 @@
           <th class="th-sm">ID</th>
           <th class="th-sm">Title</th>
           <th class="th-sm">Variants</th>
-          <th class="th-sm">Check</th>
+          <th class="th-sm">Delete disount</th>
           <th class="th-sm">With discount</th>
         </tr>
       </thead>
@@ -71,27 +71,29 @@
                 <span class="custom-control-indicator"></span>
               </label>  
             </td>
-            <td class="Mystyle {{row.mySelected}}">{{row.id}}</td>  
-            <td class="Mystyle {{row.mySelected}}">{{row.title}}</td>
-            <td class="Mystyle {{row.mySelected}}">
+            <td class="Mystyle {{row.otherValue}}">{{row.id}}</td>  
+            <td class="Mystyle {{row.otherValue}}">{{row.title}}</td>
+            <td class="Mystyle {{row.otherValue}}">
               <table>
                 <thead>
                   <tr>
                     <th class="th-sm col-md-2">Color</th>
                     <th class="th-sm col-md-2">Price</th>
                     <th class="th-sm col-md-2">Compare at Price</th>
+                    <th class="th-sm col-md-2">Discount</th>
                   </tr>
                 </thead>
                   <tr ng-repeat="variantes in row.variants">
                       <td>{{variantes.title}}</td>
-                      <td>{{variantes.price}}</td>
+                      <td>{{variantes.price }}</td>
                       <td>{{variantes.compare_at_price}}</td>
+                      <td ng-if=" (variantes.price / variantes.compare_at_price)*100 != 'Infinity' ">{{(variantes.price / variantes.compare_at_price)*100}} %</td>
                   </tr>
                 </tbody>
               </table>
             </td>
-            <td class="Mystyle {{row.mySelected}}">{{row.Selected}}</td>
-            <td class="Mystyle {{row.mySelected}}">{{row.mySelected}}</td>
+            <td ng-repeat="variantes in row.variants" class="Mystyle {{row.otherValue}}"> <button class="btn btn-danger" ng-if=" (variantes.price / variantes.compare_at_price)*100 != 'Infinity' "> delete</button></td>
+            <td class="Mystyle {{row.otherValue}}">{{row.mySelected}}</td>
 
         </tr>
       </tbody>

@@ -367,6 +367,9 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
         
         $scope.productsall = [];
         for(var i in $scope.productsall2){
+            $scope.tagspliteado = $scope.productsall2[i].tags.split(",").pop();
+            //$scope.tagspliteado = $scope.productsall2[i].tags.slice($scope.productsall2[i].tags.lastIndexOf(',')+1);
+            $scope.tagspliteado2=$scope.tagspliteado.replace(/["]/g, "");
             var modelview = {
                 id : $scope.productsall2[i].id,
                 title : JSON.parse($scope.productsall2[i].title),
@@ -387,9 +390,20 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
                 image : JSON.parse($scope.productsall2[i].image),
                 mySelected : $scope.productsall2[i].Selected,
                 Selected : false,
+                otherValue: $scope.tagspliteado2,
             };
+            
+            
+            /*
+            for(var k = 1; $scope.tagspliteado.length; k++){
+                console.log($scope.tagspliteado[k]);
+            }
+            */
+
+
             $scope.productsall.push(modelview);
         }
+        
         
         $scope.productsallbusqueda = $scope.productsall;
 
@@ -528,86 +542,80 @@ empleadoControllers.controller('ControllerSyncupProduct', ['$scope','$http','$lo
         $scope.countPages = Math.ceil($scope.totalproducts/250);
         $scope.GetSyncup = function () {
             $scope.GetClean();
-            //$timeout(function(){
-                function registrarProductos(page){
-                    $http.post(rute+"php/ProductsByPage.php?page="+page).then(function successCallback(response) {
+            function registrarProductos(page,k){
+                $http.post(rute+"php/ProductsByPage.php?page="+page).then(function successCallback(response) {
                         $scope.loading = true;
                         $scope.ProductsbyPage = response.data;
                         $scope.ProductsbyPageAll = $scope.ProductsbyPage.products;
+                    for(var j in $scope.ProductsbyPageAll){
                         $timeout(function(){
-                            for(var j in $scope.ProductsbyPageAll){
-                                
-                                var modelsend = [];
-                                modelsend = {
-                                    Myid : $scope.ProductsbyPageAll[j]['id'],
-                                    Mytitle : JSON.stringify($scope.ProductsbyPageAll[j]['title']),
-                                    Mybody_html : JSON.stringify($scope.ProductsbyPageAll[j]['body_html']),
-                                    Myvendor : $scope.ProductsbyPageAll[j]['vendor'],
-                                    Myproduct_type : $scope.ProductsbyPageAll[j]['product_type'],
-                                    Mycreated_at : $scope.ProductsbyPageAll[j]['created_at'],
-                                    Myhandle : $scope.ProductsbyPageAll[j]['handle'],
-                                    Myupdated_at : $scope.ProductsbyPageAll[j]['updated_at'],
-                                    Mypublished_at : $scope.ProductsbyPageAll[j]['published_at'],
-                                    Mytemplate_suffix : $scope.ProductsbyPageAll[j]['template_suffix'],
-                                    Mypublished_scope : $scope.ProductsbyPageAll[j]['published_scope'],
-                                    Mytags : JSON.stringify($scope.ProductsbyPageAll[j]['tags']),
-                                    Myadmin_graphql_api_id : $scope.ProductsbyPageAll[j]['admin_graphql_api_id'],
-                                    Myvariants : JSON.stringify($scope.ProductsbyPageAll[j]['variants']),
-                                    Myoptions : JSON.stringify($scope.ProductsbyPageAll[j]['options']),
-                                    Myimages : JSON.stringify($scope.ProductsbyPageAll[j]['images']),
-                                    Myimage : JSON.stringify($scope.ProductsbyPageAll[j]['image']),
-                                    MySelected: false
-                                }
-                                var dataSaveProductsPHP = JSON.stringify(modelsend);
-                                //$timeout(function(){
-                                $http.post(rute+'api/?a=registrarProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
-                                    /*
-                                    $scope.dataSKU = response.data;
-                                    $scope.loading = false;
-                                    console.log($scope.dataSKU);
-                                    console.log('logrado');
-                                    */
-                                   $scope.contador = i++;
-                                   $scope.countProducts = $scope.contador- 2;
-                                   //console.log($scope.countProducts);
-
-                                }, function errorCallback(response) {
-                                    console.log('no logrado');
-                                });   
-                                //}, 2000);
+                            $scope.contador3 = k++;
+                            var modelsend = [];
+      
+                            modelsend = {
+                                Myid : $scope.ProductsbyPageAll[$scope.contador3]['id'],
+                                Mytitle : JSON.stringify($scope.ProductsbyPageAll[$scope.contador3]['title']),
+                                Mybody_html : JSON.stringify($scope.ProductsbyPageAll[$scope.contador3]['body_html']),
+                                Myvendor : $scope.ProductsbyPageAll[$scope.contador3]['vendor'],
+                                Myproduct_type : $scope.ProductsbyPageAll[$scope.contador3]['product_type'],
+                                Mycreated_at : $scope.ProductsbyPageAll[$scope.contador3]['created_at'],
+                                Myhandle : $scope.ProductsbyPageAll[$scope.contador3]['handle'],
+                                Myupdated_at : $scope.ProductsbyPageAll[$scope.contador3]['updated_at'],
+                                Mypublished_at : $scope.ProductsbyPageAll[$scope.contador3]['published_at'],
+                                Mytemplate_suffix : $scope.ProductsbyPageAll[$scope.contador3]['template_suffix'],
+                                Mypublished_scope : $scope.ProductsbyPageAll[$scope.contador3]['published_scope'],
+                                Mytags : JSON.stringify($scope.ProductsbyPageAll[$scope.contador3]['tags']),
+                                Myadmin_graphql_api_id : $scope.ProductsbyPageAll[$scope.contador3]['admin_graphql_api_id'],
+                                Myvariants : JSON.stringify($scope.ProductsbyPageAll[$scope.contador3]['variants']),
+                                Myoptions : JSON.stringify($scope.ProductsbyPageAll[$scope.contador3]['options']),
+                                Myimages : JSON.stringify($scope.ProductsbyPageAll[$scope.contador3]['images']),
+                                Myimage : JSON.stringify($scope.ProductsbyPageAll[$scope.contador3]['image']),
+                                MySelected: false
                             }
-                        }, 2000);
-                    }, function errorCallback(response) {
+                            var dataSaveProductsPHP = JSON.stringify(modelsend);
+                            $http.post(rute+'api/?a=registrarProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
+                                /*
+                                $scope.dataSKU = response.data;
+                                $scope.loading = false;
+                                console.log($scope.dataSKU);
+                                console.log('logrado');
+                                */
+                                $scope.contador = i++;
+                                $scope.countProducts = $scope.contador- 2;
+                                //console.log($scope.countProducts);
+
+                            }, function errorCallback(response) {
+                                console.log('error 505');
+                            });   
+                        }, j*500);
+                    }
+                }, function errorCallback(response) {
                         console.log("error 505");  
-                    });
+                });
+            }
+            for(var i = 1 ; i <= $scope.countPages ; i++){
+                if(i == 1){
+                    registrarProductos(1,0);
                 }
-                
-                for(var i = 1 ; i <= $scope.countPages ; i++){
-                    if(i == 1){
-                        registrarProductos(1);
-                    }
-                    if(i == 2){
-                        $timeout(function(){
-                            registrarProductos(2);
-                        }, 10000);
-                    }
-                    if(i == 3){
-                        $timeout(function(){
-                            registrarProductos(3);
-                        }, 20000);
-                    }
-                    if(i == 4){
-                        $timeout(function(){
-                            registrarProductos(4);
-                        }, 30000);
-                    }
+                if(i == 2){
+                    $timeout(function(){
+                        registrarProductos(2,0);
+                    }, 125000);
                 }
-            //}, 3000);   
+                if(i == 3){
+                    $timeout(function(){
+                        registrarProductos(3,0);
+                    }, 250000);
+                }
+                if(i == 4){
+                    $timeout(function(){
+                        registrarProductos(4,0);
+                    }, 500000);
+                }
+            }    
         }
-
-
-        console.log($scope.dataCountProducts.count);
-        console.log($scope.countPages);
+        //console.log($scope.dataCountProducts.count);
+        //console.log($scope.countPages);
     }, function errorCallback(response) {
         console.log("error 505");  
     });
