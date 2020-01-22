@@ -57,8 +57,7 @@
           <th class="th-sm">ID</th>
           <th class="th-sm">Title</th>
           <th class="th-sm">Variants</th>
-          <th class="th-sm">Delete disount</th>
-          <th class="th-sm">With discount</th>
+
         </tr>
       </thead>
       
@@ -71,9 +70,9 @@
                 <span class="custom-control-indicator"></span>
               </label>  
             </td>
-            <td class="Mystyle {{row.otherValue}}">{{row.id}}</td>  
-            <td class="Mystyle {{row.otherValue}}">{{row.title}}</td>
-            <td class="Mystyle {{row.otherValue}}">
+            <td class="Mystyle ">{{row.id}}</td>  
+            <td class="Mystyle ">{{row.title}}</td>
+            <td class="Mystyle ">
               <table>
                 <thead>
                   <tr>
@@ -81,19 +80,29 @@
                     <th class="th-sm col-md-2">Price</th>
                     <th class="th-sm col-md-2">Compare at Price</th>
                     <th class="th-sm col-md-2">Discount</th>
+                    <th class="th-sm col-md-2">Delete</th>
                   </tr>
                 </thead>
                   <tr ng-repeat="variantes in row.variants">
                       <td>{{variantes.title}}</td>
                       <td>{{variantes.price }}</td>
                       <td>{{variantes.compare_at_price}}</td>
-                      <td ng-if=" (variantes.price / variantes.compare_at_price)*100 != 'Infinity' ">{{(variantes.price / variantes.compare_at_price)*100}} %</td>
+                      <td ng-if=" ((variantes.compare_at_price - variantes.price)/variantes.compare_at_price)*100 != '-Infinity' ">{{((variantes.compare_at_price - variantes.price)/variantes.compare_at_price)*100}} %</td>
+                      <td ng-if=" ((variantes.compare_at_price - variantes.price)/variantes.compare_at_price)*100 != '-Infinity' "><button class="btn btn-danger" ng-click="GetValueIndividual(row.id,variantes.id)" > <i class="zmdi zmdi-delete"></i></button></td>
                   </tr>
                 </tbody>
               </table>
             </td>
-            <td ng-repeat="variantes in row.variants" class="Mystyle {{row.otherValue}}"> <button class="btn btn-danger" ng-if=" (variantes.price / variantes.compare_at_price)*100 != 'Infinity' "> delete</button></td>
-            <td class="Mystyle {{row.otherValue}}">{{row.mySelected}}</td>
+            <td>
+              <div ng-repeat="variantes in row.variants">
+                <div ng-if="$index == 0 && variantes.compare_at_price>0"> 
+                  <button class="btn btn-danger" ng-click="GetValueAllVariants(row.id)" > 
+                    <i class="zmdi zmdi-delete"></i>
+                  </button>
+                </div>
+              </div>
+            </td>
+
 
         </tr>
       </tbody>
@@ -105,6 +114,13 @@
         <img src="img/loading.gif" >
       </div>
     </div>
+
+    <div class="row loadproductsdeleted" ng-if="loading2">
+      <div class="col-12" >
+        <img src="img/loading.gif" >
+      </div>
+    </div>
+
     <!------------>
     <br>
     <hr>

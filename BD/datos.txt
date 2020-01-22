@@ -8,3 +8,9 @@ https://embed.plnkr.co/plunk/B2iYRZ
 
 para los checkbox
 https://www.aspsnippets.com/Articles/How-to-get-multiple-CheckBox-checked-value-in-AngularJS.aspx
+
+
+
+user: julia@juliatesta.com
+
+Pass: iZ1A7RoVd11

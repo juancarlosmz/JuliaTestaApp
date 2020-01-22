@@ -358,6 +358,7 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
         $scope.mensaje = false;
         
         $scope.loading = false;
+        $scope.loading2 = false;
         //
         $scope.productsall2 = response.data;
 
@@ -367,9 +368,19 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
         
         $scope.productsall = [];
         for(var i in $scope.productsall2){
-            $scope.tagspliteado = $scope.productsall2[i].tags.split(",").pop();
-            //$scope.tagspliteado = $scope.productsall2[i].tags.slice($scope.productsall2[i].tags.lastIndexOf(',')+1);
-            $scope.tagspliteado2=$scope.tagspliteado.replace(/["]/g, "");
+            //$scope.tagspliteado = $scope.productsall2[i].tags.split(",").pop();
+            //$scope.tagspliteado2=$scope.tagspliteado.replace(/["]/g, "");
+            //$scope.tagspliteado = $scope.productsall2[i].tags.split(",");
+            //console.log($scope.tagspliteado.length);
+/*
+            for(var h = 0; h < $scope.tagspliteado.length; h++ ){
+                $scope.Mytagevaluate = $scope.tagspliteado[h].replace(/["]/g, "");
+                if($scope.Mytagevaluate == 'tagDiscount'){
+                    console.log($scope.Mytagevaluate);
+                    $scope.tagspliteado2 = $scope.Mytagevaluate;
+                }
+            }
+            */
             var modelview = {
                 id : $scope.productsall2[i].id,
                 title : JSON.parse($scope.productsall2[i].title),
@@ -390,7 +401,6 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
                 image : JSON.parse($scope.productsall2[i].image),
                 mySelected : $scope.productsall2[i].Selected,
                 Selected : false,
-                otherValue: $scope.tagspliteado2,
             };
             
             
@@ -436,7 +446,7 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
                         for(var j= 0; j< productVariants.length;j++){
                             var modelvariants = {
                                 id: productVariants[j].id,
-                                price: String(productVariants[j].price*myvaldiscount),
+                                price: String(productVariants[j].price-(productVariants[j].price*myvaldiscount)),
                                 compare_at_price: productVariants[j].price,
                             }
                             variants.push(modelvariants);
@@ -452,6 +462,7 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
                 //console.log(MyArray);
                 SendMyArray = 'myData='+JSON.stringify(MyArray);
                 //para registrar a mi bd mando el otro array 
+
                 for(var j in MyArray){
                     var modelsend = {
                         Myid : MyArray[j]['id'],
@@ -482,7 +493,114 @@ empleadoControllers.controller('ControllerProducts', ['$scope','$http','$locatio
                         console.log('no logrado');
                     });  
                 }
+
+
             }
+               
+        }
+        //delete discount by variants but dont delete discount tag
+
+        $scope.GetValueIndividual = function (id,variantid) {
+            console.log(id);
+            console.log(variantid);
+            var MyArray = [];
+                for (var i = 0; i < $scope.productsall.length; i++) {
+                    if ($scope.productsall[i].id == id) {
+                        var productId = parseInt($scope.productsall[i].id);
+                        var productTag = $scope.productsall[i].tags;
+                        var productVariants = $scope.productsall[i].variants;
+                        var variants =[];
+                        for(var j= 0; j< productVariants.length;j++){
+                            var modelvariants = [];
+                            if(productVariants[j].id == variantid){
+                                var modelvariants = {
+                                    id: productVariants[j].id,
+                                    price: productVariants[j].compare_at_price,
+                                    compare_at_price: productVariants[j].compare_at_price-productVariants[j].compare_at_price,
+                                }
+                            }else{
+                                var modelvariants = {
+                                    id: productVariants[j].id,
+                                    price: productVariants[j].price,
+                                    compare_at_price: productVariants[j].compare_at_price,
+                                }
+                            }
+                            variants.push(modelvariants);
+                        }
+                        var model = {
+                            id: productId,
+                            tags: productTag,
+                            variants,
+                        }
+                        MyArray.push(model);
+                    }
+                }
+                console.log(MyArray);
+               
+        }
+        //delete all discount and delete discount tag
+        $scope.GetValueAllVariants = function (id) {
+            $scope.loading2 = true;
+            var MyArray = [];
+                for (var i = 0; i < $scope.productsall.length; i++) {
+                    if ($scope.productsall[i].id == id) {
+                        var productId = parseInt($scope.productsall[i].id);
+                        var productTag = $scope.productsall[i].tags;
+                        var newtag = productTag.replace("tagDiscount", "");
+                        console.log(newtag);
+
+                        var productVariants = $scope.productsall[i].variants;
+                        var variants =[];
+                        for(var j= 0; j< productVariants.length;j++){
+                            var modelvariants = {
+                                id: productVariants[j].id,
+                                price: productVariants[j].compare_at_price,
+                                compare_at_price: productVariants[j].compare_at_price-productVariants[j].compare_at_price,
+                            }
+                            variants.push(modelvariants);
+                        }
+                        var model = {
+                            id: productId,
+                            tags: newtag,
+                            variants,
+                        }
+                        MyArray.push(model);
+                    }
+                }
+                //console.log(MyArray);
+                SendMyArray = 'myData='+JSON.stringify(MyArray);
+                //para registrar a mi bd mando el otro array 
+
+                for(var j in MyArray){
+                    var modelsend = {
+                        Myid : MyArray[j]['id'],
+                        Mytags : JSON.stringify(MyArray[j]['tags']),
+                        Myvariants : JSON.stringify(MyArray[j]['variants']),
+                        MySelected: "false"
+                    }
+                    var dataSaveProductsPHP = JSON.stringify(modelsend);
+                    console.log(dataSaveProductsPHP);
+                    $http.post(rute+'api/?a=updateProductosPHP',dataSaveProductsPHP).then(function successCallback(response) {   
+                        $scope.dataSKU = response.data;
+                        $http({
+                            method : 'POST',
+                            url : rute+'php/PutProduct.php',
+                            data: SendMyArray,
+                            headers : {'Content-Type': 'application/x-www-form-urlencoded'}  
+                        }).then(function successCallback(response){
+                            $scope.ladata = response;
+                            $timeout(function(){
+                                $scope.loading2 = false;
+                                location.reload();
+                            }, 500);
+                        }, function errorCallback(response) {
+                            console.log("error 505");  
+                        }); 
+                        console.log('logrado');
+                    }, function errorCallback(response) {
+                        console.log('no logrado');
+                    });  
+                }
                
         }
 
